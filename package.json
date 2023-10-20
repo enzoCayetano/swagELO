@@ -11,5 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.13.0"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.22.15",
+    "eslint": "^8.51.0"
   }
 }

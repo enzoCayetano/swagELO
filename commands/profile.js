@@ -2,9 +2,9 @@ const { SlashCommandBuilder } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('about')
-        .setDescription('About this bot!'),
+        .setName('profile')
+        .setDescription('Check your current profile, ELO, etc.'),
     async execute(interaction) {
-        await interaction.reply('About me!')
+        await interaction.reply('Checked profile!')
     },
 }

@@ -1,10 +1,12 @@
 // Require necessary discord.js classes and .env
+const { Client, Events, GatewayIntentBits } = require('discord.js');
 const fs = require('node:fs')
 const path = require('node:path')
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+
 const dotenv = require('dotenv')
 dotenv.config()
 
+// Check if bot ready
 client.once(Events.ClientReady, c => {
     console.log(`Ready! Logged in as ${c.user.tag}`)
 })

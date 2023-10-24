@@ -10,7 +10,8 @@
   "author": "swag",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.13.0"
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.15",

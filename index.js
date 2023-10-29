@@ -11,6 +11,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
 // Create commands
 client.commands = new Collection()
+client.cooldowns = new new Collection()
 
 // Get subfolders path
 const foldersPath = path.join(__dirname, 'commands')

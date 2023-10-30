@@ -4,7 +4,7 @@ module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('profile')
-        .setDescription('Check your current profile, ELO, etc.'),
+        .setDescription('Check your current profile.'),
     async execute(interaction) {
         await interaction.reply('Checked profile!')
     },

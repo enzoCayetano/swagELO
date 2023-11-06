@@ -1,5 +1,5 @@
 // Require necessary discord.js classes and .env
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const fs = require('node:fs')
 const path = require('node:path')
 
@@ -11,7 +11,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
 // Create commands
 client.commands = new Collection()
-client.cooldowns = new new Collection()
+client.cooldowns = new Collection()
 
 // Get subfolders path
 const foldersPath = path.join(__dirname, 'commands')

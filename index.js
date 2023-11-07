@@ -1,5 +1,5 @@
 // Require necessary discord.js classes and .env
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('node:fs')
 const path = require('node:path')
 

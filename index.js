@@ -20,7 +20,7 @@ const commandFolders = fs.readdirSync(foldersPath)
 // For each folder in ./commands
 for (const folder of commandFolders) {
     // Get commands '.js' from subfolders
-    const commandsPath = path.join(__dirname, 'commands')
+    const commandsPath = path.join(foldersPath, folder)
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
     
     for (const file of commandFiles) {

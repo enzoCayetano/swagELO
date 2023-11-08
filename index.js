@@ -7,7 +7,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // Initialize sequelize connection and define models
-const { sequelize, Tags } = require('./database.js');
+const { sequelize } = require('./database.js');
 
 // Create new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })

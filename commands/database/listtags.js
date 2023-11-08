@@ -4,8 +4,8 @@ const category = __dirname.split('/').pop()
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('showtags')
-    .setDescription('Show all tags.'),
+    .setName('listtags')
+    .setDescription('List all tags.'),
     category,
     async execute(interaction) {
       const tagList = await Tags.findAll({ attributes: ['name'] })

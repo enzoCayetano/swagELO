@@ -5,7 +5,11 @@ const { Tags } = require('../../database.js')
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('fetchtag')
-    .setDescription('Fetch a tag'),
+    .setDescription('Fetch a tag')
+    .addStringOption(option => 
+      option.setName('name')
+        .setDescription('Name of the tag')
+        .setRequired(true)),
   category,
   async execute(interaction) {
     const tagName = interaction.options.getString('name')

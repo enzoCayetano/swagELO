@@ -5,7 +5,11 @@ const category = __dirname.split('/').pop()
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('taginfo')
-    .setDescription('Get tag info.'),
+    .setDescription('Get tag info.')
+    .addStringOption(option => 
+      option.setName('name')
+        .setDescription('Name of the tag')
+        .setRequired(true)),
     category,
     async execute(interaction) {
       const tagName = interaction.options.getString('name')

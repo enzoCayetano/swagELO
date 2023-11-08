@@ -9,6 +9,15 @@ const sequelize = new Sequelize('database', 'user', 'password', {
   storage: 'database.sqlite',
 })
 
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.')
+  })
+  .catch (err => {
+    console.error('Unable to connect to the database: ', err)
+  })
+
 // Define sql tables
 const Tags = sequelize.define('tags', {
   name: {

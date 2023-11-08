@@ -1,11 +1,13 @@
 // Require necessary discord.js classes and .env
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
-const Sequelize = require('sequelize')
 const fs = require('node:fs')
 const path = require('node:path')
 
 const dotenv = require('dotenv')
 dotenv.config()
+
+// Initialize sequelize connection and define models
+const { sequelize, Tags } = require('./database.js');
 
 // Create new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
@@ -17,6 +19,15 @@ client.cooldowns = new Collection()
 // Get subfolders path
 const foldersPath = path.join(__dirname, 'commands')
 const commandFolders = fs.readdirSync(foldersPath)
+
+// Sync the models with the database
+sequelize.sync()
+  .then(() => {
+    console.log('Database synced with models');
+  })
+  .catch(error => {
+    console.error('Error syncing models with database:', error);
+  });
 
 // For each folder in ./commands
 for (const folder of commandFolders) {

@@ -5,8 +5,6 @@ const path = require('node:path')
 
 const dotenv = require('dotenv')
 dotenv.config()
-const { databaseToken } = process.env
-const { connect } = require('mongoose')
 
 // Create new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
@@ -56,6 +54,3 @@ for (const file of eventFiles)
 }
 
 client.login(process.env.DISCORD_TOKEN)
-(async () => {
-    await connect(databaseToken).catch(console.error)
-})()

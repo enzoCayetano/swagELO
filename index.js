@@ -1,10 +1,12 @@
 // Require necessary discord.js classes and .env
-const { Client, Collection, GatewayIntentBits, IntentsBitField } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('node:fs')
 const path = require('node:path')
 
 const dotenv = require('dotenv')
 dotenv.config()
+const { databaseToken } = process.env
+const { connect } = require('mongoose')
 
 // Create new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
@@ -54,3 +56,6 @@ for (const file of eventFiles)
 }
 
 client.login(process.env.DISCORD_TOKEN)
+(async () => {
+    await connect(databaseToken).catch(console.error)
+})()

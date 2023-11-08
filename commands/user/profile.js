@@ -1,10 +1,12 @@
 const { SlashCommandBuilder } = require('discord.js')
+const category = __dirname.split('/').pop()
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('profile')
         .setDescription('Check your current profile.'),
+    category,
     async execute(interaction) {
         // Created embed
         const embedProfile = {

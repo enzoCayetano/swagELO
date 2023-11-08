@@ -1,10 +1,12 @@
 const { SlashCommandBuilder } = require('discord.js')
+const category = __dirname.split('/').pop()
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('join')
         .setDescription('Creates a profile for you and joins swagELO.'),
+    category,
     async execute(interaction) {
         const profileEmbed = {
             title: 'Profile',

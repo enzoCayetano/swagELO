@@ -15,12 +15,6 @@ module.exports = {
                 .setRequired(true)),
     category,
     async execute(interaction) {
-        // Check if member has valid profile / has a valid role
-        const requiredRole = interaction.guild.roles.cache.find(role => role.name === global._REQUIREDROLE)
-
-        if (!requiredRole || !interaction.member.roles.cache.has(requiredRole.id))
-            return interaction.reply('This user does not have a valid profile!')
-
         // Get user from userOption
         const targetUser = interaction.options.getUser('user')
         const targetUserId = targetUser.id
@@ -33,12 +27,19 @@ module.exports = {
         const joinDate = member.joinedAt.toLocaleDateString()
         const nickname = member.nickname || targetUser.username
 
+        // Check if member has valid profile / has a valid role
+        const requiredRole = member.roles.cache.find(role => role.name === global._REQUIREDROLE)
+
+        if (!requiredRole)
+            return interaction.reply('This user does not have a valid profile!')
+
+
         // Created embed builder
         const embedProfile = new EmbedBuilder()
             .setTitle(`${targetUser.username}'s profile`)
             .setAuthor({ name: 'swagELO', iconURL: icon })
             .setColor(0x00f00)
-            .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true, size: 1024 }))
+            .setThumbnail(targetUser.displayAvatarURL({ dynamic: true, size: 1024 }))
             .addFields(
                 { name: 'Name', value: nickname, inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing

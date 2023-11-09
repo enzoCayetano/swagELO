@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
+const join = require('./join')
 const category = __dirname.split('/').pop()
 
 module.exports = {
@@ -8,22 +9,23 @@ module.exports = {
         .setDescription('Check your current profile.'),
     category,
     async execute(interaction) {
-        // Created embed
-        const embedProfile = {
-            title: 'Your Profile',
-            description: 'This is my profile.',
-            color: 0x00f00, // Color
-            fields: [
-                {
-                    name: 'Username',
-                    value: interaction.user.username,
-                },
-                {
-                    name: 'User ID',
-                    value: interaction.user.id,
-                },
-            ],
-        }
+        const member = interaction.member
+        const joinDate = member.joinedAt.toLocaleDateString()
+        const nickname = member.nickname || interaction.user.username
+
+        // Created embed builder
+        const embedProfile = new EmbedBuilder()
+            .setTitle(`${interaction.user.username}'s profile`)
+            .setColor(0x00f00)
+            .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true, size: 1024 }))
+            .addFields(
+                { name: 'Name', value: nickname, inline: true },
+                { name: 'Join Date', value: joinDate, inline: true },
+                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
+                { name: 'ELO', value: '287', inline: true },
+                { name: 'Rank', value: 'A+', inline: true }
+            )
+            .setTimestamp()
 
         await interaction.reply({ embeds: [embedProfile] })
     },

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
-const global = require('../../globalvars.js')
+const global = require('../../setup.js')
 const icon = 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
 // const join = require('./join')
 const category = __dirname.split('/').pop()

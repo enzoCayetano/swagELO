@@ -1,22 +1,41 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
+const global = require('../../globalvars.js')
 const icon = 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
-const join = require('./join')
+// const join = require('./join')
 const category = __dirname.split('/').pop()
 
 module.exports = {
     cooldown: 5,
     data: new SlashCommandBuilder()
         .setName('profile')
-        .setDescription('Check your current profile.'),
+        .setDescription('Check your current profile.')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('Which user would you like to view?')
+                .setRequired(true)),
     category,
     async execute(interaction) {
-        const member = interaction.member
+        // Check if member has valid profile / has a valid role
+        const requiredRole = interaction.guild.roles.cache.find(role => role.name === global._REQUIREDROLE)
+
+        if (!requiredRole || !interaction.member.roles.cache.has(requiredRole.id))
+            return interaction.reply('This user does not have a valid profile!')
+
+        // Get user from userOption
+        const targetUser = interaction.options.getUser('user')
+        const targetUserId = targetUser.id
+
+        // Fetch user data and put it into member
+        const member = interaction.guild.members.cache.get(targetUserId)
+
+        if (!member) return interaction.reply('User does not exist.')
+
         const joinDate = member.joinedAt.toLocaleDateString()
-        const nickname = member.nickname || interaction.user.username
+        const nickname = member.nickname || targetUser.username
 
         // Created embed builder
         const embedProfile = new EmbedBuilder()
-            .setTitle(`${interaction.user.username}'s profile`)
+            .setTitle(`${targetUser.username}'s profile`)
             .setAuthor({ name: 'swagELO', iconURL: icon })
             .setColor(0x00f00)
             .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true, size: 1024 }))

@@ -5,7 +5,7 @@ const category = __dirname.split('/').pop()
 module.exports = {
   cooldown: 10,
   data: new SlashCommandBuilder()
-    .setName('modifyuser')
+    .setName('modify')
     .setDescription('Modify user data. [HOST ONLY]')
     .addUserOption(option =>
       option.setName('user')

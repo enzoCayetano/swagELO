@@ -10,7 +10,7 @@ module.exports = {
     async execute(interaction) {
         const profileEmbed = {
             title: 'Profile',
-            description: 'This is your profile.',
+                description: 'This is your profile.',
             color: 0x00ff00,
             fields: [
                 {

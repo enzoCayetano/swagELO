@@ -17,7 +17,7 @@ module.exports = {
     const requiredRole = interaction.guild.roles.cache.find(role => role.name === global._HOSTROLE)
 
     if (!requiredRole || !interaction.member.roles.cache.has(requiredRole.id))
-      return interaction.reply('You do not have access to this command.')
+      return interaction.reply({ content: 'You do not have access to this command.', ephemeral: true })
 
     return interaction.reply('Test!')
   }

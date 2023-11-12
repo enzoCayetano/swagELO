@@ -36,7 +36,7 @@ module.exports = {
         // Created embed builder
         const embedProfile = new EmbedBuilder()
             .setAuthor({ name: `${targetUser.username}`, iconURL: targetUser.displayAvatarURL({ dynamic: true, size: 256 }) })
-            .setColor(0x00f00)
+            .setColor(0x00ff00)
             .addFields(
                 { name: 'Name', value: nickname, inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing

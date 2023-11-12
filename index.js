@@ -1,5 +1,6 @@
 // Require necessary discord.js classes and .env
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const mongoose = require('mongoose')
 const fs = require('node:fs')
 const path = require('node:path')
 
@@ -7,7 +8,14 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // Create new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+    ], 
+})
 
 // Create commands
 client.commands = new Collection()

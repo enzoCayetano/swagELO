@@ -8,14 +8,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // Create new client instance
-const client = new Client({ 
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-    ], 
-})
+const client = new Client({ intents: [ GatewayIntentBits.Guilds ] })
 
 // Create commands
 client.commands = new Collection()
@@ -44,6 +37,7 @@ for (const folder of commandFolders) {
     }   
 }
 
+// Event handler
 const eventsPath = path.join(__dirname, 'events')
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'))
 
@@ -60,5 +54,18 @@ for (const file of eventFiles)
         client.on(event.name, (...args) => event.execute(...args))
     }
 }
+
+// Connect to mongoose
+mongoose.connect(process.env.MONGODB_URL)
+
+const db = mongoose.connection;
+
+db.on('error', (error) => {
+  console.error('MongoDB connection error:', error);
+});
+
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
 
 client.login(process.env.DISCORD_TOKEN)

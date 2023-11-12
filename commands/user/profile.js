@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const global = require('../../globalvars.js')
-// const join = require('./join')
+const model = require('../../schemas/data.js')
 const category = __dirname.split('/').pop()
 
 module.exports = {

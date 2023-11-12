@@ -33,7 +33,7 @@ module.exports = {
 
       collector.on('collect', async(i) => {
         if (i.customId === 'confirm_wipe') {
-          // Wipe logic
+          await Model.deleteMany()
           await interaction.editReply({ content: 'Data wipe successful.', components: [] })
         } else {
           await interaction.editReply({ content: 'Data wipe canceled.', components: [] })

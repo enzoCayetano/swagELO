@@ -6,15 +6,15 @@ module.exports = {
     cooldown: 15,
     data: new SlashCommandBuilder()
         .setName('join')
-        .setDescription('Join swagELO!'),
+        .setDescription('Create a new profile!'),
     category,
     async execute(interaction) {
+        // Look if profile exists
         const query = {
             userId: interaction.user.id,
             guildId: interaction.guild.id,
         }
 
-        
         try {
             const model = await Model.findOne(query)
             
@@ -38,7 +38,8 @@ module.exports = {
             }
 
         } catch (error) {
-            console.log(`Error joining: ${error}`)
+            console.log(`Error creating profile: ${error}`)
+            await interaction.reply(`Error creating profile. ${error}`)
         }
 
     },

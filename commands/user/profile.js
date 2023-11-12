@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const global = require('../../globalvars.js')
-const model = require('../../schemas/data.js')
+const Model = require('../../schemas/data.js')
 const category = __dirname.split('/').pop()
 
 module.exports = {
@@ -16,40 +16,39 @@ module.exports = {
     async execute(interaction) {
         // Get user from userOption
         const targetUser = interaction.options.getUser('user')
-        const targetUserId = targetUser.id
 
-        // Fetch user data and put it into member
-        const member = interaction.guild.members.cache.get(targetUserId)
+        // Query for user in db
+        const query = {
+            userId: interaction.user.id,
+            guildId: interaction.guild.id,
+        }
 
-        if (!member) return interaction.reply('User does not exist.')
+        try {
+            const userData = await Model.findOne(query)
+            
+            if (!userData) return interaction.reply('This user does not have an existing profile!')
+            
+            const member = await interaction.guild.members.fetch(userData.userId)
+            const joinDate = member.joinedAt ? member.joinedAt.toLocaleDateString() : 'Member is not in the server.'
+            const nickname = member.nickname || targetUser.username
 
-        const joinDate = member.joinedAt.toLocaleDateString()
-        const nickname = member.nickname || targetUser.username
-
-        // Check if member has valid profile / has a valid role
-        const requiredRole = member.roles.cache.find(role => role.name === global._REQUIREDROLE)
-
-        if (!requiredRole)
-            return interaction.reply('This user does not have a valid profile!')
-
-
-        // Created embed builder
-        const embedProfile = new EmbedBuilder()
+            // Created embed builder    
+            const embedProfile = new EmbedBuilder()
             .setAuthor({ name: `${targetUser.username}`, iconURL: targetUser.displayAvatarURL({ dynamic: true, size: 256 }) })
             .setColor(0x00ff00)
             .addFields(
                 { name: 'Name', value: nickname, inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Join Date', value: joinDate, inline: true },
-                { name: 'ELO', value: '287', inline: true },
+                { name: 'ELO', value: userData.ELO.toString(), inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
-                { name: 'Rank', value: 'A+', inline: true },
-                { name: 'Kills', value: '0', inline: true },
+                { name: 'Rank', value: userData.Rank, inline: true },
+                { name: 'Kills', value: userData.Kills.toString(), inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
-                { name: 'Deaths', value: '0', inline: true },
-                { name: 'KDR', value: '0', inline: true },
+                { name: 'Deaths', value: userData.Deaths.toString(), inline: true },
+                { name: 'KDR', value: userData.KDR.toString(), inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
-                { name: 'MVP', value: '0', inline: true },
+                { name: 'MVP', value: userData.MVP.toString(), inline: true },
             )
             .setTimestamp()
             .setFooter({ 
@@ -57,6 +56,10 @@ module.exports = {
                 iconURL: 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
             })
 
-        await interaction.reply({ embeds: [embedProfile] })
+            await interaction.reply({ embeds: [embedProfile] })
+        } catch (error) {
+            console.error('Error querying the database.', error)
+            await interaction.reply('Error querying the database. Check the console for more details.')
+        }
     },
 }

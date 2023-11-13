@@ -8,7 +8,12 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // Create new client instance
-const client = new Client({ intents: [ GatewayIntentBits.Guilds ] })
+const client = new Client({ intents: [
+     GatewayIntentBits.Guilds,
+     GatewayIntentBits.GuildMessages,
+     GatewayIntentBits.GuildMembers,
+     GatewayIntentBits.MessageContent,
+] })
 
 // Create commands
 client.commands = new Collection()

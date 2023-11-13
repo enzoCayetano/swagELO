@@ -7,6 +7,6 @@ module.exports = {
 		.setDescription('About this bot!'),
 category,
 async execute(interaction) {
-		await interaction.reply('This bot was created by swigger for daddy acid.')
+		await interaction.reply('This bot was created by swigger for daddy delayss.')
 	},
 }

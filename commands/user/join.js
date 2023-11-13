@@ -33,8 +33,10 @@ module.exports = {
                     MVP: 0,
                 })
                 await newModel.save()
+
+                const currentTime = new Date()
                 
-                await interaction.reply({ content: 'Created profile!', ephemeral: true })
+                await interaction.reply({ content: `${interaction.user.username} has created joined matchmaking at ${currentTime}.` })
             }
 
         } catch (error) {

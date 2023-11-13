@@ -19,7 +19,7 @@ module.exports = {
 
         // Query for user in db
         const query = {
-            userId: interaction.user.id,
+            userId: targetUser.id,
             guildId: interaction.guild.id,
         }
 
@@ -28,14 +28,17 @@ module.exports = {
             
             if (!userData) return interaction.reply('This user does not have an existing profile!')
             
-            const member = await interaction.guild.members.fetch(userData.userId)
+            const member = await interaction.guild.members.fetch({
+                user: userData.userId,
+                force: true,
+            })
             const joinDate = member.joinedAt ? member.joinedAt.toLocaleDateString() : 'Member is not in the server.'
             const nickname = member.nickname || targetUser.username
 
             // Created embed builder    
             const embedProfile = new EmbedBuilder()
             .setAuthor({ name: `${targetUser.username}`, iconURL: targetUser.displayAvatarURL({ dynamic: true, size: 256 }) })
-            .setColor(0x00ff00)
+            .setColor(0x8B0000)
             .addFields(
                 { name: 'Name', value: nickname, inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing

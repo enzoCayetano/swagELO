@@ -33,7 +33,7 @@ const dataSchema = new Schema({
     type: Number,
     required: true,
   },
-  Loses: {
+  Losses: {
     type: Number,
     required: true,
   },

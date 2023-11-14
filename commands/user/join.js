@@ -28,11 +28,11 @@ module.exports = {
                     guildId: interaction.guild.id,
                     username: interaction.user.username,
                     ELO: 0,
-                    Rank: 'F',
+                    Rank: 'N/A',
                     Kills: 0,
                     Deaths: 0,
                     Wins: 0,
-                    Loses: 0,
+                    Losses: 0,
                     KDR: 0,
                     MVP: 0,
                 })

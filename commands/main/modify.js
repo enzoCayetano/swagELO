@@ -3,6 +3,11 @@ const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/data.js');
 
+let eloGainOnWin = 90
+let eloGainOnKill = 20
+let eloLossOnLose = -100
+let eloLossOnDeath = -10
+
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()
@@ -118,12 +123,52 @@ module.exports = {
           collectorNumber.stop()
 
           // CALCULATE KDR, ELO, AND RANK
-          userData.KDR = parseFloat((userData.Kills / userData.Deaths).toFixed(2))
 
+          // Calculate KDR (bunch of checks cus ts wasnt working)
+          if (userData.Kills != 0 && userData.Deaths != 0)
+            userData.KDR = parseFloat((userData.Kills / userData.Deaths).toFixed(2))
 
+          if (isNaN(userData.KDR))
+            userData.KDR = 0
+
+          // Calculate ELO
+          if (userData.ELO >= 6000) {
+            eloGainOnWin = 50
+            eloGainOnKill = 10
+            eloLossOnLose = 75
+            eloLossOnDeath = 25
+          }
+
+          if (userData.Wins > 0)
+            userData.ELO += userData.Wins * eloGainOnWin
+        
+          if (userData.Kills > 0)
+            userData.ELO += userData.Kills * eloGainOnKill
+        
+          if (userData.Loses > 0)
+            userData.ELO += userData.Loses * eloLossOnLose
+      
+          if (userData.Deaths > 0)
+            userData.ELO += userData.Deaths * eloLossOnDeath
+
+          // Calculate RANK
+          if (userData.ELO >= 600)
+            userData.Rank = 'S'
+          else if (userData.ELO > 500)
+            userData.Rank = 'A'
+          else if (userData.ELO > 400)
+            userData.Rank = 'B'
+          else if (userData.ELO > 300)
+            userData.Rank = 'C'
+          else if (userData.ELO > 200)
+            userData.Rank = 'D'
+          else if (userData.ELO > 100)
+            userData.Rank = 'F'
+          else
+            userData.Rank = 'N/A' // just a check ;)
 
           await userData.save()
-          interaction.followUp('Saved to database.')
+          interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')
         })
 
         collectorNumber.on('end', (collected, reason) => {

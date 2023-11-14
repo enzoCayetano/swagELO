@@ -22,7 +22,7 @@ module.exports = {
                 // Profile exists
                 await interaction.reply({ content: 'You already have a profile!', ephemeral: true })
             } else {
-                // Create new profile
+                // Create new profile -- REMEMBER TO UPDATE SCHEMA IF ADD NEW THINGS
                 const newModel = new Model({
                     userId: interaction.user.id,
                     guildId: interaction.guild.id,

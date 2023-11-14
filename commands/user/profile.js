@@ -48,6 +48,9 @@ module.exports = {
                 { name: 'Kills', value: userData.Kills.toString(), inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Deaths', value: userData.Deaths.toString(), inline: true },
+                { name: 'Wins', value: userData.Wins.toString(), inline: true },
+                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
+                { name: 'Loses', value: userData.Loses.toString(), inline: true },
                 { name: 'KDR', value: userData.KDR.toString(), inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'MVP', value: userData.MVP.toString(), inline: true },

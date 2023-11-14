@@ -29,6 +29,14 @@ const dataSchema = new Schema({
     type: Number,
     required: true,
   },
+  Wins: {
+    type: Number,
+    required: true,
+  },
+  Loses: {
+    type: Number,
+    required: true,
+  },
   KDR: {
     type: Number,
     required: true,

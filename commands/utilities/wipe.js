@@ -26,18 +26,20 @@ module.exports = {
       await interaction.reply({
         content: 'Are you sure want to wipe all data? This action is IRREVERSIBLE.',
         components: [row],
-        ephemeral: true,
       })
 
       const filter = (i) => i.customId === 'confirm_wipe' || i.customId === 'cancel_wipe'
       const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
 
       collector.on('collect', async(i) => {
-        if (i.customId === 'confirm_wipe') {
-          await Model.deleteMany()
-          await interaction.editReply({ content: 'Data wipe successful.', components: [] })
-        } else {
-          await interaction.editReply({ content: 'Data wipe canceled.', components: [] })
+        if (i.user.id === interaction.user.id)
+        {
+          if (i.customId === 'confirm_wipe') {
+            await Model.deleteMany()
+            await interaction.editReply({ content: 'Data wipe successful.', components: [] })
+          } else {
+            await interaction.editReply({ content: 'Data wipe canceled.', components: [] })
+          }
         }
 
         collector.stop()

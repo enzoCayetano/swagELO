@@ -19,8 +19,10 @@ module.exports = {
             const model = await Model.findOne(query)
             
             if (model) {
+                // Profile exists
                 await interaction.reply({ content: 'You already have a profile!', ephemeral: true })
             } else {
+                // Create new profile
                 const newModel = new Model({
                     userId: interaction.user.id,
                     guildId: interaction.guild.id,
@@ -29,6 +31,8 @@ module.exports = {
                     Rank: 'F',
                     Kills: 0,
                     Deaths: 0,
+                    Wins: 0,
+                    Loses: 0,
                     KDR: 0,
                     MVP: 0,
                 })
@@ -36,7 +40,7 @@ module.exports = {
 
                 const currentTime = new Date()
                 
-                await interaction.reply({ content: `${interaction.user.username} has created joined matchmaking at ${currentTime}.` })
+                await interaction.reply({ content: `${interaction.user.username} has joined matchmaking at ${currentTime}.` })
             }
 
         } catch (error) {

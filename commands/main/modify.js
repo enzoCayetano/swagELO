@@ -31,10 +31,10 @@ module.exports = {
             
       if (!userData) return interaction.reply('This user does not have an existing profile!')
 
-      await interaction.reply(`USER SELECTED => ${userData.username}\nWhat would you like to modify?\n1. Kills\n2. Deaths\n3. MVP`)
+      await interaction.reply(`USER SELECTED => ${userData.username}\nWhat would you like to modify?\n1. Kills\n2. Deaths\n3. Wins\n4. Loses\n5. MVP`)
 
       const filter = (message) => {
-        return message.author.id === message.author.id && ['1', '2', '3'].includes(message.content.trim())
+        return message.author.id && ['1', '2', '3', '4', '5'].includes(message.content.trim())
       }
 
       const collectorType = interaction.channel.createMessageCollector({
@@ -53,6 +53,12 @@ module.exports = {
             modifyType = 'Deaths'
             break
           case '3':
+            modifyType = 'Wins'
+            break
+          case '4':
+            modifyType = 'Loses'
+            break
+          case '5':
             modifyType = 'MVP'
             break
         }
@@ -83,6 +89,14 @@ module.exports = {
               userData.Deaths += amount
               if (userData.Deaths < 0) userData.Deaths = 0
               break
+            case 'Wins':
+              userData.Wins += amount
+              if (userData.Wins < 0) userData.Wins = 0
+              break
+            case 'Loses':
+              userData.Loses += amount
+              if (userData.Deaths < 0) userData.Loses = 0
+              break
             case 'MVP':
               userData.MVP += amount
               if (userData.MVP < 0) userData.Deaths = 0
@@ -103,7 +117,10 @@ module.exports = {
 
           collectorNumber.stop()
 
+          // CALCULATE KDR, ELO, AND RANK
           userData.KDR = parseFloat((userData.Kills / userData.Deaths).toFixed(2))
+
+
 
           await userData.save()
           interaction.followUp('Saved to database.')
@@ -129,4 +146,4 @@ module.exports = {
       await interaction.reply('Error querying the database. Check the console for more details.')
     }
   }
-};
+}

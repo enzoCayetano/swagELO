@@ -15,6 +15,7 @@ const dataSchema = new Schema({
   },
   ELO: {
     type: Number,
+    default: 0,
     required: true,
   },
   Rank: {
@@ -23,26 +24,32 @@ const dataSchema = new Schema({
   },
   Kills: {
     type: Number,
+    default: 0,
     required: true,
   },
   Deaths: {
     type: Number,
+    default: 0,
     required: true,
   },
   Wins: {
     type: Number,
+    default: 0,
     required: true,
   },
   Losses: {
     type: Number,
+    default: 0,
     required: true,
   },
   KDR: {
     type: Number,
+    default: 0,
     required: true,
   },
   MVP: {
     type: Number,
+    default: 0,
     required: true,
   },
 })

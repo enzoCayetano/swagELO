@@ -70,14 +70,23 @@ module.exports = {
 
       await interaction.reply(`Changed ${userData.username}'s STATS:\nKills: ${userData.Kills}\nDeaths: ${userData.Deaths}\nWins: ${userData.Wins}\nLosses: ${userData.Losses}\nMVP: ${userData.MVP}`)
 
+      await userData.save()
+
       // CALCULATE KDR, ELO, AND RANK
 
       // Calculate KDR (bunch of checks cus ts wasn't working)
       if (userData.Kills != 0 && userData.Deaths != 0)
         userData.KDR = parseFloat((userData.Kills / userData.Deaths).toFixed(2))
 
-      if (isNaN(userData.KDR))
+      if (isNaN(userData.KDR)) {
+        console.log(userData.KDR)
         userData.KDR = 0
+      }
+
+      if (isNaN(userData.ELO)) {
+        console.log(userData.ELO)
+        userData.ELO = 0
+      }
 
       // Calculate ELO
       if (userData.ELO >= 6000) {
@@ -127,7 +136,7 @@ module.exports = {
 
     } catch (error) {
       console.error('Error querying the database.', error)
-      await interaction.reply('Error querying the database. Check the console for more details.')
+      await interaction.reply(`An error occurred: ${error}`)
     }
   }
-}
+} 

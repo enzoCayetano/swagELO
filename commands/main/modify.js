@@ -30,13 +30,13 @@ module.exports = {
   category,
   async execute(interaction) {
     let hostRole = interaction.guild.roles.cache.find(r => r.name === global.HOSTROLE) || await interaction.guild.roles.fetch(global.HOSTROLE)
-    console.log(hostRole)
     if (!hostRole)
         return interaction.reply({ content: `You do not have access to this command. Only ${global.HOSTROLE}s can use this command.`, ephemeral: true })
 
     // ELO vars
     let eloGainOnWin = 80
     let eloGainOnKill = 20
+    let eloGainOnMVP = 40
     let eloLossOnLose = 90
     let eloLossOnDeath = 10
 
@@ -93,22 +93,27 @@ module.exports = {
       // Calculate ELO
       if (userData.ELO >= 6000) {
         eloGainOnWin = 60
-        eloGainOnKill = 20
+        eloGainOnKill = 10
+        eloGainOnMVP = 30
         eloLossOnLose = 60
         eloLossOnDeath = 20
       }
 
       let eloWin = 0
       let eloKill = 0
+      let eloMVP = 0
       let eloLose = 0
       let eloDeath = 0
 
       eloWin = userData.Wins * eloGainOnWin
       eloKill = userData.Kills * eloGainOnKill
+      eloMVP = userData.MVP * eloGainOnMVP
       eloLose = userData.Losses * eloLossOnLose
       eloDeath = userData.Deaths * eloLossOnDeath
 
-      userData.ELO = eloWin + eloKill - eloLose - eloDeath
+      userData.ELO = eloWin + eloKill + eloMVP - eloLose - eloDeath
+
+      if (userData.ELO < 0) userData.ELO = 0
 
       // Calculate RANK
       if (userData.ELO >= 6000)
@@ -128,6 +133,23 @@ module.exports = {
 
       await userData.save()
       interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')
+
+      // Set nickname
+      const updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+
+      const nickMember = interaction.guild.members.cache.get(targetUser.id)
+
+      if (nickMember) {
+        await nickMember.setNickname(updatedNick)
+          .then(() => {
+            console.log(`Successfully set nickname ${nickMember} for ${targetUser.username}`)
+          })
+          .catch(error => {
+            console.error('Error setting username: ', error)
+          })
+      } else {
+        console.log('Member not found.')
+      }
 
     } catch (error) {
       console.error('Error querying the database.', error)

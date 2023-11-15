@@ -43,6 +43,23 @@ module.exports = {
                 await newModel.save()
 
                 const currentTime = new Date()
+
+                // Set nickname
+                const updatedNick = `[0 ELO] ${interaction.user.username}`
+
+                const nickMember = interaction.guild.members.cache.get(interaction.user.id)
+
+                if (nickMember) {
+                    await nickMember.setNickname(updatedNick)
+                    .then(() => {
+                        console.log(`Successfully set nickname ${nickMember} for ${interaction.user.username}`)
+                    })
+                    .catch(error => {
+                        console.error('Error setting username: ', error)
+                    })
+                } else {
+                    console.log('Member not found.')
+                }
                 
                 await interaction.reply({ content: `${interaction.user.username} has joined matchmaking at ${currentTime}.` })
             }

@@ -123,7 +123,7 @@ module.exports = {
       else if (userData.ELO > 1000)
         userData.Rank = 'F'
       else
-        userData.Rank = 'Not Ranked' // just a check ;)
+        userData.Rank = 'N' // just a check ;)
 
       await userData.save()
       interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')

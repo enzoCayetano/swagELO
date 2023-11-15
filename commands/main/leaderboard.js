@@ -18,7 +18,7 @@ module.exports = {
       }).join('\n')
 
       const newEmbed = new EmbedBuilder()
-        .setColor(0x0099F)
+        .setColor(0x8B0000)
         .setTitle('CURRENT RANKINGS')
         .setDescription('Top 25 Players')
         .addFields({

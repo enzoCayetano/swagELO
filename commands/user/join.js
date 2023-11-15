@@ -32,7 +32,7 @@ module.exports = {
                     guildId: interaction.guild.id,
                     username: interaction.user.username,
                     ELO: 0,
-                    Rank: 'Not Ranked',
+                    Rank: 'N',
                     Kills: 0,
                     Deaths: 0,
                     Wins: 0,

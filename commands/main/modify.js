@@ -29,7 +29,8 @@ module.exports = {
         .setDescription('Set MVPs.')),
   category,
   async execute(interaction) {
-    if (!interaction.guild.roles.cache.find(role => role.name === global.HOSTROLE.id))
+    let hostRole = interaction.guild.roles.cache.find(r => r.name === global.HOSTROLE) || await interaction.guild.roles.fetch(global.HOSTROLE)
+    if (!hostRole)
         return interaction.reply({ content: `You do not have access to this command. Only ${global.HOSTROLE}s can use this command.`, ephemeral: true })
 
     // ELO vars

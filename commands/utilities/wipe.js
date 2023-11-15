@@ -9,7 +9,8 @@ module.exports = {
     .setDescription('Wipe all data. WARNING: IRREVERSIBLE. Admins only.'),
     category,
     async execute(interaction) {
-      if (!interaction.guild.roles.cache.find(role => role.name === global.ADMINROLE.id))
+      let adminRole = interaction.guild.roles.cache.find(r => r.name === global.ADMINROLE) || await interaction.guild.roles.fetch(global.ADMINROLE)
+      if (!adminRole)
         return interaction.reply({ content: `You do not have access to this command. Only ${global.ADMINROLE}s can use this command.`, ephemeral: true })
 
       const row = new ActionRowBuilder().addComponents(

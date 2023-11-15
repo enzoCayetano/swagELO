@@ -57,7 +57,7 @@ module.exports = {
             )
             .setTimestamp()
             .setFooter({ 
-                text: 'swagELO', 
+                text: 'ARMM', 
                 iconURL: 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
             })
 

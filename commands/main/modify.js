@@ -29,13 +29,13 @@ module.exports = {
         .setDescription('Set MVPs.')),
   category,
   async execute(interaction) {
-    if (!interaction.member.permissions.has(global._HOSTROLE))
-        return interaction.reply({ content: 'You do not have access to this command.', ephemeral: true })
+    if (!interaction.guild.roles.cache.find(role => role.name === global.HOSTROLE.id))
+        return interaction.reply({ content: `You do not have access to this command. Only ${global.HOSTROLE}s can use this command.`, ephemeral: true })
 
     // ELO vars
-    let eloGainOnWin = 90
+    let eloGainOnWin = 80
     let eloGainOnKill = 20
-    let eloLossOnLose = 100
+    let eloLossOnLose = 90
     let eloLossOnDeath = 10
 
     // Get all option data from userOption
@@ -66,7 +66,7 @@ module.exports = {
       if (setLosses !== undefined)
         userData.Losses = setLosses || userData.Losses;
       if (setMVPs !== undefined)
-        userData.MVPs = setMVPs || userData.MVPs;
+        userData.MVP = setMVPs || userData.MVP;
 
       await interaction.reply(`Changed ${userData.username}'s STATS:\nKills: ${userData.Kills}\nDeaths: ${userData.Deaths}\nWins: ${userData.Wins}\nLosses: ${userData.Losses}\nMVP: ${userData.MVP}`)
 
@@ -90,46 +90,39 @@ module.exports = {
 
       // Calculate ELO
       if (userData.ELO >= 6000) {
-        eloGainOnWin = 50
-        eloGainOnKill = 10
-        eloLossOnLose = 75
-        eloLossOnDeath = 25
+        eloGainOnWin = 60
+        eloGainOnKill = 20
+        eloLossOnLose = 60
+        eloLossOnDeath = 20
       }
 
-      let eloWin
-      let eloKill
-      let eloLose
-      let eloDeath
+      let eloWin = 0
+      let eloKill = 0
+      let eloLose = 0
+      let eloDeath = 0
 
-      if (userData.Wins > 0)
-        eloWin = userData.Wins * eloGainOnWin
-    
-      if (userData.Kills > 0)
-        eloKill = userData.Kills * eloGainOnKill
-    
-      if (userData.Losses > 0)
-        eloLose = userData.Losses * eloLossOnLose
-  
-      if (userData.Deaths > 0)
-        eloDeath = userData.Deaths * eloLossOnDeath
+      eloWin = userData.Wins * eloGainOnWin
+      eloKill = userData.Kills * eloGainOnKill
+      eloLose = userData.Losses * eloLossOnLose
+      eloDeath = userData.Deaths * eloLossOnDeath
 
       userData.ELO = eloWin + eloKill - eloLose - eloDeath
 
       // Calculate RANK
-      if (userData.ELO >= 600)
+      if (userData.ELO >= 6000)
         userData.Rank = 'S'
-      else if (userData.ELO > 500)
+      else if (userData.ELO > 5000)
         userData.Rank = 'A'
-      else if (userData.ELO > 400)
+      else if (userData.ELO > 4000)
         userData.Rank = 'B'
-      else if (userData.ELO > 300)
+      else if (userData.ELO > 3000)
         userData.Rank = 'C'
-      else if (userData.ELO > 200)
+      else if (userData.ELO > 2000)
         userData.Rank = 'D'
-      else if (userData.ELO > 100)
+      else if (userData.ELO > 1000)
         userData.Rank = 'F'
       else
-        userData.Rank = 'N/A' // just a check ;)
+        userData.Rank = 'Not Ranked' // just a check ;)
 
       await userData.save()
       interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')

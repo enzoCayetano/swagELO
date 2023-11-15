@@ -9,8 +9,8 @@ module.exports = {
     .setDescription('Wipe all data. WARNING: IRREVERSIBLE. Admins only.'),
     category,
     async execute(interaction) {
-      if (!interaction.member.permissions.has(global._HOSTROLE))
-        return interaction.reply({ content: 'You do not have access to this command.', ephemeral: true })
+      if (!interaction.guild.roles.cache.find(role => role.name === global.ADMINROLE.id))
+        return interaction.reply({ content: `You do not have access to this command. Only ${global.ADMINROLE}s can use this command.`, ephemeral: true })
 
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()

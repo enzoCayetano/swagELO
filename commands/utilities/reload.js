@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js')
+const global = require('../../roles.js')
 const category = __dirname.split('/').pop()
 
 module.exports = {
@@ -11,6 +12,9 @@ module.exports = {
         .setRequired(true)),
   category,
   async execute(interaction) {
+    if (!interaction.guild.roles.cache.find(role => role.name === global.ADMINROLE.id))
+        return interaction.reply({ content: `You do not have access to this command. Only ${global.ADMINROLE}s can use this command.`, ephemeral: true })
+
     const commandName = interaction.options.getString('command', true).toLowerCase()
     const command = interaction.client.commands.get(commandName)
 

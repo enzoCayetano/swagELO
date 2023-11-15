@@ -21,6 +21,6 @@ module.exports = {
 		.setDescription('About this bot!'),
 category,
 async execute(interaction) {
-		await interaction.reply(`This bot was created by <@753118882427830342> for <@1146283177648861184>.`)
+		await interaction.reply(`This bot was created by <@753118882427830342>. Donate please. :(`)
 	},
 }

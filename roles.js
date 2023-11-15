@@ -1,8 +1,10 @@
 // [WARNING] ONLY FOR ROLES
-const _REQUIREDROLE = 'matchmaking'
-const _HOSTROLE = 'CULT LEADER'
+const REQUIREDROLE = 'Player'
+const ADMINROLE = 'Admin'
+const HOSTROLE = 'Host'
 
 module.exports = {
-  _REQUIREDROLE,
-  _HOSTROLE,
+  REQUIREDROLE,
+  HOSTROLE,
+  ADMINROLE
 }

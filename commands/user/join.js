@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js')
 const Model = require('../../schemas/data.js')
+const global = require('../../roles.js')
 const category = __dirname.split('/').pop()
 
 module.exports = {
@@ -16,6 +17,9 @@ module.exports = {
         }
 
         try {
+            if (!interaction.guild.roles.cache.find(role => role.name === global.REQUIREDROLE))
+                return interaction.reply({ content: `You are not a ${global.REQUIREDROLE}.`, ephemeral: true })
+
             const model = await Model.findOne(query)
             
             if (model) {
@@ -28,7 +32,7 @@ module.exports = {
                     guildId: interaction.guild.id,
                     username: interaction.user.username,
                     ELO: 0,
-                    Rank: 'N/A',
+                    Rank: 'Not Ranked',
                     Kills: 0,
                     Deaths: 0,
                     Wins: 0,

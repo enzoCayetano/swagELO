@@ -12,19 +12,19 @@ module.exports = {
       option.setName('user')
         .setDescription('Which user to modify.')
         .setRequired(true))
-    .addIntegerOption(option =>
+    .addStringOption(option =>
       option.setName('kills')
         .setDescription('Set kills.'))
-    .addIntegerOption(option =>
+    .addStringOption(option =>
       option.setName('deaths')
         .setDescription('Set deaths.'))
-    .addIntegerOption(option =>
+    .addStringOption(option =>
       option.setName('wins')
         .setDescription('Set wins.'))
-    .addIntegerOption(option =>
+    .addStringOption(option =>
       option.setName('losses')
         .setDescription('Set losses.'))
-    .addIntegerOption(option =>
+    .addStringOption(option =>
       option.setName('mvp')
         .setDescription('Set MVPs.')),
   category,
@@ -34,19 +34,35 @@ module.exports = {
         return interaction.reply({ content: `You do not have access to this command. Only ${global.HOSTROLE}s can use this command.`, ephemeral: true })
 
     // ELO vars
-    let eloGainOnWin = 80
-    let eloGainOnKill = 20
-    let eloGainOnMVP = 40
-    let eloLossOnLose = 90
-    let eloLossOnDeath = 10
+    let eloGainOnWin = 150
+    let eloGainOnKill = 50
+    let eloGainOnMVP = 90
+    let eloLossOnLose = 60
+    let eloLossOnDeath = 20
 
     // Get all option data from userOption
     const targetUser = interaction.options.getUser('user')
-    let setKills = interaction.options.getInteger('kills')
-    let setDeaths = interaction.options.getInteger('deaths')
-    let setWins = interaction.options.getInteger('wins')
-    let setLosses = interaction.options.getInteger('losses')
-    let setMVPs = interaction.options.getInteger('mvp')
+    let setKills = interaction.options.getString('kills')
+    let setDeaths = interaction.options.getString('deaths')
+    let setWins = interaction.options.getString('wins')
+    let setLosses = interaction.options.getString('losses')
+    let setMVPs = interaction.options.getString('mvp')
+
+    // parse for +/-
+    const handlePlusMinus = (input, currentValue) => {
+      if (typeof input === 'string' && input.trim() !== '') {
+        const operator = input.charAt(0)
+        const value = parseInt(input.slice(1))
+        
+        if (!isNaN(value) && (operator === '+' || operator === '-')) {
+          return operator === '+' ? currentValue + value : currentValue - value
+        } else if (!isNaN(input)) {
+          return parseInt(input)
+        }
+      }
+      
+      return currentValue
+    }
 
     // Query for user in db
     const query = {
@@ -59,16 +75,26 @@ module.exports = {
             
       if (!userData) return interaction.reply('This user does not have an existing profile!')
 
-      if (setKills !== undefined)
-        userData.Kills = setKills || userData.Kills;
-      if (setDeaths !== undefined)
-        userData.Deaths = setDeaths || userData.Deaths;
-      if (setWins !== undefined)
-        userData.Wins = setWins || userData.Wins;
-      if (setLosses !== undefined)
-        userData.Losses = setLosses || userData.Losses;
-      if (setMVPs !== undefined)
-        userData.MVP = setMVPs || userData.MVP;
+      if (setKills !== undefined) {
+        setKills = handlePlusMinus(setKills, userData.Kills)
+        userData.Kills = setKills;
+      }
+      if (setDeaths !== undefined) {
+        setDeaths = handlePlusMinus(setDeaths, userData.Deaths)
+        userData.Deaths = setDeaths
+      }
+      if (setWins !== undefined) {
+        setWins = handlePlusMinus(setWins, userData.Wins)
+        userData.Wins = setWins
+      }
+      if (setLosses !== undefined) {
+        setLosses = handlePlusMinus(setLosses, userData.Losses)
+        userData.Losses = setLosses
+      }
+      if (setMVPs !== undefined) {
+        setMVPs = handlePlusMinus(setMVPs, userData.MVP)
+        userData.MVP = setMVPs
+      }
 
       await interaction.reply(`Changed ${userData.username}'s STATS:\nKills: ${userData.Kills}\nDeaths: ${userData.Deaths}\nWins: ${userData.Wins}\nLosses: ${userData.Losses}\nMVP: ${userData.MVP}`)
 
@@ -93,10 +119,10 @@ module.exports = {
       // Calculate ELO
       if (userData.ELO >= 6000) {
         eloGainOnWin = 60
-        eloGainOnKill = 10
-        eloGainOnMVP = 30
-        eloLossOnLose = 60
-        eloLossOnDeath = 20
+        eloGainOnKill = 30
+        eloGainOnMVP = 50
+        eloLossOnLose = 20
+        eloLossOnDeath = 10
       }
 
       let eloWin = 0

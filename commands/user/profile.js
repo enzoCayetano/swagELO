@@ -32,14 +32,13 @@ module.exports = {
                 force: true,
             })
             const joinDate = member.joinedAt ? member.joinedAt.toLocaleDateString() : 'Member is not in the server.'
-            const nickname = member.nickname || targetUser.username
 
             // Created embed builder    
             const embedProfile = new EmbedBuilder()
             .setAuthor({ name: `${targetUser.username}`, iconURL: targetUser.displayAvatarURL({ dynamic: true, size: 256 }) })
             .setColor(0x8B0000)
             .addFields(
-                { name: 'Name', value: nickname, inline: true },
+                { name: 'Name', value: userData.username, inline: true },
                 { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Join Date', value: joinDate, inline: true },
                 { name: 'ELO', value: userData.ELO.toString(), inline: true },

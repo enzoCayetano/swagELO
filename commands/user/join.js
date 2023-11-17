@@ -7,7 +7,10 @@ module.exports = {
     cooldown: 15,
     data: new SlashCommandBuilder()
         .setName('join')
-        .setDescription('Create a new profile!'),
+        .setDescription('Create a new profile!')
+        .addStringOption(option =>
+            option.setName('name')
+                .setDescription('Name of profile')),
     category,
     async execute(interaction) {
         // Look if profile exists
@@ -30,7 +33,7 @@ module.exports = {
                 const newModel = new Model({
                     userId: interaction.user.id,
                     guildId: interaction.guild.id,
-                    username: interaction.user.username,
+                    username: interaction.options.getString('name') || interaction.user.username,
                     ELO: 0,
                     Rank: 'N',
                     Kills: 0,

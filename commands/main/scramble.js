@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js')
 const category = __dirname.split('/').pop()
-const Model = require('../../schemas/data.js')
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,7 +14,7 @@ module.exports = {
     const team2Channel = interaction.guild.channels.cache.get('1174386645953421382')
 
     if (voiceChannel) {
-      const voiceStates = Array.from(voiceChannel.members.values())
+      const voiceStates = voiceChannel.members
       const userIds = voiceStates.map((voiceState) => voiceState.id)
 
       console.log(`User IDs in voice channel: ${userIds.join(', ')}`)

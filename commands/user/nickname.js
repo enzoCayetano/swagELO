@@ -36,7 +36,7 @@ module.exports = {
         if (nickMember) {
           await nickMember.setNickname(updatedNick)
             .then(() => {
-              console.log(`Successfully set nickname ${nickMember} for ${targetUser.username}`)
+              console.log(`Successfully set nickname ${nickMember} for ${userData.username}`)
             })
             .catch(error => {
               console.error('Error setting username: ', error)

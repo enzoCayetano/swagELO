@@ -17,11 +17,11 @@ module.exports = {
         new ButtonBuilder()
           .setCustomId('confirm_wipe')
           .setLabel('Confirm')
-          .setStyle('3'),
+          .setStyle(3),
         new ButtonBuilder()
           .setCustomId('cancel_wipe')
           .setLabel('Cancel')
-          .setStyle('4'),
+          .setStyle(4),
       )
       
       await interaction.reply({
@@ -33,8 +33,7 @@ module.exports = {
       const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
 
       collector.on('collect', async(i) => {
-        if (i.user.id === interaction.user.id)
-        {
+        if (i.user.id === interaction.user.id) {
           if (i.customId === 'confirm_wipe') {
             await Model.deleteMany()
             await interaction.editReply({ content: 'Data wipe successful.', components: [] })

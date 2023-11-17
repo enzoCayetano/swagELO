@@ -21,7 +21,9 @@ module.exports = {
 
       for (let i = userIds.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
-        [userIds[i], userIds[j]] = [userIds[j], userIds[i]]
+        const temp = userIds[i]
+        userIds[i] = userIds[j]
+        userIds[j] = temp
       }
 
       for (let i = 0; i < userIds.length; i++) {

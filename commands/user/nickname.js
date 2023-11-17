@@ -28,7 +28,24 @@ module.exports = {
 
         await userData.save()
 
-        await interaction.reply(`Successfully change your nickname to: ${username}`)
+        // Set nickname
+        const updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+
+        const nickMember = interaction.guild.members.cache.get(interaction.user.id)
+
+        if (nickMember) {
+          await nickMember.setNickname(updatedNick)
+            .then(() => {
+              console.log(`Successfully set nickname ${nickMember} for ${targetUser.username}`)
+            })
+            .catch(error => {
+              console.error('Error setting username: ', error)
+            })
+        } else {
+          console.log('Member not found.')
+        }
+
+        await interaction.reply(`Successfully changed your nickname to: ${username}`)
       } catch (error) {
         console.error('Error updating nickname:', error)
         interaction.reply('An error occurred while updating the nickname.')

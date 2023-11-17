@@ -34,7 +34,7 @@ module.exports = {
         return interaction.reply({ content: `You do not have access to this command. Only ${global.HOSTROLE}s can use this command.`, ephemeral: true })
 
     // ELO vars
-    let eloGainOnWin = 150
+    let eloGainOnWin = 125
     let eloGainOnKill = 50
     let eloGainOnMVP = 90
     let eloLossOnLose = 60
@@ -75,6 +75,12 @@ module.exports = {
             
       if (!userData) return interaction.reply('This user does not have an existing profile!')
 
+      const formerKills = userData.Kills
+      const formerDeaths = userData.Deaths
+      const formerWins = userData.Wins
+      const formerLosses = userData.Losses
+      const formerMVPs = userData.MVP
+
       if (setKills !== undefined) {
         setKills = handlePlusMinus(setKills, userData.Kills)
         userData.Kills = setKills;
@@ -96,7 +102,12 @@ module.exports = {
         userData.MVP = setMVPs
       }
 
-      await interaction.reply(`Changed ${userData.username}'s STATS:\nKills: ${userData.Kills}\nDeaths: ${userData.Deaths}\nWins: ${userData.Wins}\nLosses: ${userData.Losses}\nMVP: ${userData.MVP}`)
+      await interaction.reply(`Changed ${userData.username}'s STATS:
+            Kills: ${(userData.Kills !== formerKills) ? `${formerKills} => ${userData.Kills}` : formerKills}
+            Deaths: ${(userData.Deaths !== formerDeaths) ? `${formerDeaths} => ${userData.Deaths}` : formerDeaths}
+            Wins: ${(userData.Wins !== formerWins) ? `${formerWins} => ${userData.Wins}` : formerWins}
+            Losses: ${(userData.Losses !== formerLosses) ? `${formerLosses} => ${userData.Losses}` : formerLosses}
+            MVP: ${(userData.MVP !== formerMVPs) ? `${formerMVPs} => ${userData.MVP}` : formerMVPs}`)
 
       await userData.save()
 

@@ -103,11 +103,11 @@ module.exports = {
       }
 
       await interaction.reply(`Changed ${userData.username}'s STATS:
-            Kills: ${(userData.Kills !== formerKills) ? `${formerKills} => ${userData.Kills}` : formerKills}
-            Deaths: ${(userData.Deaths !== formerDeaths) ? `${formerDeaths} => ${userData.Deaths}` : formerDeaths}
-            Wins: ${(userData.Wins !== formerWins) ? `${formerWins} => ${userData.Wins}` : formerWins}
-            Losses: ${(userData.Losses !== formerLosses) ? `${formerLosses} => ${userData.Losses}` : formerLosses}
-            MVP: ${(userData.MVP !== formerMVPs) ? `${formerMVPs} => ${userData.MVP}` : formerMVPs}`)
+                Kills: ${(userData.Kills !== formerKills) ? `${formerKills} => ${userData.Kills}` : formerKills}
+                Deaths: ${(userData.Deaths !== formerDeaths) ? `${formerDeaths} => ${userData.Deaths}` : formerDeaths}
+                Wins: ${(userData.Wins !== formerWins) ? `${formerWins} => ${userData.Wins}` : formerWins}
+                Losses: ${(userData.Losses !== formerLosses) ? `${formerLosses} => ${userData.Losses}` : formerLosses}
+                MVP: ${(userData.MVP !== formerMVPs) ? `${formerMVPs} => ${userData.MVP}` : formerMVPs}`)
 
       await userData.save()
 
@@ -150,23 +150,64 @@ module.exports = {
 
       userData.ELO = eloWin + eloKill + eloMVP - eloLose - eloDeath
 
-      if (userData.ELO < 0) userData.ELO = 0
+      if (userData.ELO < 0) userData.ELO = 0 // NEGATIVE ELO NO MORE
 
+      // Get roles
+      const roles = {
+        'S': interaction.guild.roles.cache.find(role => role.name === 'S'),
+        'A+': interaction.guild.roles.cache.find(role => role.name === 'A+'),
+        'A-': interaction.guild.roles.cache.find(role => role.name === 'A-'),
+        'B+': interaction.guild.roles.cache.find(role => role.name === 'B+'),
+        'B-': interaction.guild.roles.cache.find(role => role.name === 'B-'),
+        'C+': interaction.guild.roles.cache.find(role => role.name === 'C+'),
+        'C-': interaction.guild.roles.cache.find(role => role.name === 'C-'),
+        'D+': interaction.guild.roles.cache.find(role => role.name === 'D+'),
+        'D-': interaction.guild.roles.cache.find(role => role.name === 'D-'),
+        'F+': interaction.guild.roles.cache.find(role => role.name === 'F+'),
+        'F-': interaction.guild.roles.cache.find(role => role.name === 'F-'),
+      }
+      
       // Calculate RANK
       if (userData.ELO >= 6000)
         userData.Rank = 'S'
       else if (userData.ELO > 5000)
-        userData.Rank = 'A'
+        userData.Rank = 'A+'
+      else if (userData.ELO > 4500)
+        userData.Rank = 'A-'
       else if (userData.ELO > 4000)
-        userData.Rank = 'B'
+        userData.Rank = 'B+'
+      else if (userData.ELO > 3500)
+        userData.Rank = 'B-'
       else if (userData.ELO > 3000)
-        userData.Rank = 'C'
+        userData.Rank = 'C+'
+      else if (userData.ELO > 2500)
+        userData.Rank = 'C-'
       else if (userData.ELO > 2000)
-        userData.Rank = 'D'
+        userData.Rank = 'D+'
+      else if (userData.ELO > 1500)
+        userData.Rank = 'D-'
       else if (userData.ELO > 1000)
-        userData.Rank = 'F'
+        userData.Rank = 'F+'
+      else if (userData.ELO > 500)
+        userData.Rank = 'F-'
       else
         userData.Rank = 'N' // NON RANKED
+
+      const roleToAdd = roles[userData.Rank]
+
+      if (roleToAdd) {
+        const member = interaction.guild.members.cache.get(userData.userId)
+
+        if (member) {
+          member.roles.add(roleToAdd)
+            .then(() => console.log(`Added role ${roleToAdd.name} to ${userData.username}`))
+            .catch(error => console.error('Error adding role: ', error))
+        } else {
+          console.error('Member not found.')
+        }
+      } else {
+        console.error('Role not found for current rank.')
+      }
 
       await userData.save()
       interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')

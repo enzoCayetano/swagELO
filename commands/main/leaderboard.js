@@ -14,7 +14,12 @@ module.exports = {
         .limit(25)
 
       const leaderboard = entries.map((entry, index) => {
-        return `${index + 1}: ${entry.Rank} ${entry.ELO} ELO ${entry.username}`
+        let prefix = `${index + 1}: `;
+        if (index < 3) {
+            // Bold the top three entries
+            return `**${prefix} ${entry.Rank} ${entry.ELO} ELO ${entry.username}**`;
+        }
+        return `${prefix} ${entry.Rank} ${entry.ELO} ELO ${entry.username}`;
       }).join('\n')
 
       const newEmbed = new EmbedBuilder()

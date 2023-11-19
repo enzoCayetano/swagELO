@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageMentions } = require('discord.js');
 const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/data.js');
@@ -148,7 +148,21 @@ module.exports = {
       eloLose = userData.Losses * eloLossOnLose
       eloDeath = userData.Deaths * eloLossOnDeath
 
+      // #gains-losses
+      let previousELO = userData.ELO
       userData.ELO = eloWin + eloKill + eloMVP - eloLose - eloDeath
+      let eloChange = userData.ELO - previousELO
+
+      let messageContent;
+      if (eloChange > 0) {
+        messageContent = `<@${userData.userId}> gained ${eloChange} ELO!`
+      } else if (eloChange < 0) {
+        messageContent = `<@${userData.userId}> lost ${Math.abs(eloChange)} ELO!`
+      } else {
+        messageContent = `<@${userData.userId}> had no change in ELO.`
+      }
+
+      await sendMessageToChannel(messageContent, '1175705395751305217', interaction);  
 
       if (userData.ELO < 0) userData.ELO = 0 // NEGATIVE ELO NO MORE
 
@@ -233,5 +247,15 @@ module.exports = {
       console.error('Error querying the database.', error)
       await interaction.reply(`An error occurred: ${error}`)
     }
+
+    async function sendMessageToChannel(messageContent, channelId, interaction) {
+      try {
+        const channel = await interaction.client.channels.fetch(channelId);
+        await channel.send(messageContent);
+      } catch (error) {
+        console.error(`Error sending message to channel: ${error}`);
+      }
+    }
   }
 } 
+

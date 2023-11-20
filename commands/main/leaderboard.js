@@ -28,7 +28,7 @@ module.exports = {
         case 'kills':
           sortField = 'Kills'
           break
-        case 'kills':
+        case 'deaths':
           sortField = 'Deaths'
           break
         case 'mvp':

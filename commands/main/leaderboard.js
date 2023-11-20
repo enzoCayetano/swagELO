@@ -5,27 +5,52 @@ const Model = require('../../schemas/data.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
-    .setDescription('Check the leaderboard!'),
+    .setDescription('Check the leaderboard!')
+    .addStringOption(option => 
+      option.setName('type')
+        .setDescription('Select leaderboard to show.')
+        .setRequired(true)
+        .addChoices({ name: 'ELO', value: 'elo' })
+        .addChoices({ name: 'Kills', value: 'kills' })
+        .addChoices({ name: 'MVP', value: 'mvp' })
+    ),
   category,
   async execute(interaction) {
     try {
+      const type = interaction.options.getString('type')
+
+      let sortField
+      switch(type) {
+        case 'elo':
+          sortField = 'ELO'
+          break
+        case 'kills':
+          sortField = 'Kills'
+          break
+        case 'mvp':
+          sortField = 'MVP'
+          break
+        default:
+          return interaction.reply('Invalid leaderboard type. Select either ELO, Kills, or MVPs.')
+      }
+
       const entries = await Model.find({})
-        .sort({ ELO: -1 })
+        .sort({ [sortField]: -1 })
         .limit(25)
 
       const leaderboard = entries.map((entry, index) => {
         let prefix = `${index + 1}: `;
         if (index < 3) {
             // Bold the top three entries
-            return `**${prefix} ${entry.Rank} ${entry.ELO} ELO ${entry.username}**`;
+            return `**${prefix} ${entry.Rank} ${entry[sortField]} ${type.toUpperCase()} ${entry.username}**`;
         }
-        return `${prefix} ${entry.Rank} ${entry.ELO} ELO ${entry.username}`;
+        return `${prefix} ${entry.Rank} ${entry[sortField]} ${type.toUpperCase()} ${entry.username}`;
       }).join('\n')
 
       const newEmbed = new EmbedBuilder()
         .setColor(0x8B0000)
         .setTitle('CURRENT RANKINGS')
-        .setDescription('Top 25 Players')
+        .setDescription(`Top 25 Players - ${type.toUpperCase()} Leaderboard`)
         .addFields({
           name: 'Rankings', value: leaderboard || 'No data.',
         })

@@ -12,6 +12,7 @@ module.exports = {
         .setRequired(true)
         .addChoices({ name: 'ELO', value: 'elo' })
         .addChoices({ name: 'Kills', value: 'kills' })
+        .addChoices({ name: 'Deaths', value: 'deaths' })
         .addChoices({ name: 'MVP', value: 'mvp' })
     ),
   category,
@@ -27,11 +28,14 @@ module.exports = {
         case 'kills':
           sortField = 'Kills'
           break
+        case 'kills':
+          sortField = 'Deaths'
+          break
         case 'mvp':
           sortField = 'MVP'
           break
         default:
-          return interaction.reply('Invalid leaderboard type. Select either ELO, Kills, or MVPs.')
+          return interaction.reply('Invalid leaderboard type. Select either ELO, Kills, Deaths, or MVPs.')
       }
 
       const entries = await Model.find({})

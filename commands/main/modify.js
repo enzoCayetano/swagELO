@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageMentions } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/data.js');
@@ -153,17 +153,25 @@ module.exports = {
       userData.ELO = eloWin + eloKill + eloMVP - eloLose - eloDeath
       let eloChange = userData.ELO - previousELO
 
-      let messageContent;
+      const gainEloEmbed = new EmbedBuilder()
+        .setColor('#00FF00') // Green color
+        .addFields({ name: 'ELO Change', value: `:arrow_up: <@${userData.userId}> gained **${eloChange} ELO!**` });
+      const loseEloEmbed = new EmbedBuilder()
+        .setColor('#FF0000') // Red color
+        .addFields({ name: 'ELO Change', value: `:arrow_down: <@${userData.userId}> lost **${Math.abs(eloChange)} ELO!**` });
+      const sameEloEmbed = new EmbedBuilder()
+        .setColor('#FFFF00') // Yellow color
+        .addFields({ name: 'ELO Change', value: `:arrow_right: <@${userData.userId}> had **no change in ELO.**` });
+
       if (eloChange > 0) {
-        messageContent = `<@${userData.userId}> gained ${eloChange} ELO!`
+        await sendMessageToChannel('1175705395751305217', interaction, gainEloEmbed);  
       } else if (eloChange < 0) {
-        messageContent = `<@${userData.userId}> lost ${Math.abs(eloChange)} ELO!`
+        await sendMessageToChannel('1175705395751305217', interaction, loseEloEmbed);  
       } else {
-        messageContent = `<@${userData.userId}> had no change in ELO.`
+        await sendMessageToChannel('1175705395751305217', interaction, sameEloEmbed);  
       }
 
-      await sendMessageToChannel(messageContent, '1175705395751305217', interaction);  
-
+      
       if (userData.ELO < 0) userData.ELO = 0 // NEGATIVE ELO NO MORE
 
       // Get roles
@@ -248,10 +256,10 @@ module.exports = {
       await interaction.reply(`An error occurred: ${error}`)
     }
 
-    async function sendMessageToChannel(messageContent, channelId, interaction) {
+    async function sendMessageToChannel(channelId, interaction, embed) {
       try {
         const channel = await interaction.client.channels.fetch(channelId);
-        await channel.send(messageContent);
+        await channel.send({ embeds: [embed] });
       } catch (error) {
         console.error(`Error sending message to channel: ${error}`);
       }

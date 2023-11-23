@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
-const Model = require('../../schemas/data.js');
+const Model = require('../../schemas/user.js');
 
 module.exports = {
   cooldown: 5,
@@ -215,6 +215,16 @@ module.exports = {
       else
         userData.Rank = 'N' // NON RANKED
 
+      Object.values(roles).forEach((role) => {
+        const member = interaction.guild.members.cache.get(userData.userId)
+      
+        if (member && member.roles.cache.has(role.id)) {
+          member.roles.remove(role)
+            .then(() => console.log(`Removed role ${role.name} from ${userData.username}`))
+            .catch(error => console.error('Error removing role: ', error))
+        }
+      })
+        
       const roleToAdd = roles[userData.Rank]
 
       if (roleToAdd) {

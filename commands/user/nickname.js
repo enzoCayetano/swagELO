@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js')
-const Model = require('../../schemas/data.js')
+const Model = require('../../schemas/user.js')
 const category = __dirname.split('/').pop()
 
 module.exports = {

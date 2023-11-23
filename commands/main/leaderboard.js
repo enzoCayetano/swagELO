@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const category = __dirname.split('/').pop()
-const Model = require('../../schemas/data.js');
+const Model = require('../../schemas/user.js');
 
 module.exports = {
   data: new SlashCommandBuilder()

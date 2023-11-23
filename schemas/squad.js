@@ -24,6 +24,12 @@ const squadSchema = new Schema ({
   description: {
     type: String,
   },
+  overallELO: {
+    type: Number,
+  },
+  ranking: {
+    type: Number,
+  },
   members: {
     type: [memberSchema],
     default: [],

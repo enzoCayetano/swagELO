@@ -16,6 +16,7 @@ const client = new Client({ intents: [
      GatewayIntentBits.GuildPresences,
      GatewayIntentBits.GuildVoiceStates,
      GatewayIntentBits.MessageContent,
+     GatewayIntentBits.GuildMessageReactions,
 ] })
 
 // Create commands

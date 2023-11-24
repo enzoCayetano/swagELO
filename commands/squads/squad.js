@@ -30,6 +30,7 @@ module.exports = {
       const userData = await UserModel.findOne(query)
 
       if (!userData) return interaction.reply('You do not have an existing profile! Create one first to create a squad!')
+      if (userData.ELO < 1500) return interaction.reply('You do not meet the requirements to create a squad. REQUIRED: 1500 ELO (Rank D-)')
 
       const modal = new ModalBuilder()
         .setCustomId('create_squad')
@@ -72,6 +73,7 @@ module.exports = {
             name: squadName,
             tag: squadTag,
             description: squadDesc,
+            owner: userData.userId,
             overallELO: 0,
             ranking: 0,
             members: [
@@ -82,11 +84,14 @@ module.exports = {
             ],
           })
 
+          userData.Squad = newSquad.name
+
           newSquad.save()
+          userData.save()
 
           modalInteraction.reply(`New Squad: ${squadName} created successfully!`)
         })
-        .catch((err) => {
+        .catch((err) => { 
           console.log(`Error: ${err}`)
         })
     } else if (subcommand === 'list') {

@@ -24,6 +24,10 @@ const squadSchema = new Schema ({
   description: {
     type: String,
   },
+  owner: {
+    type: String,
+    required: true,
+  },
   overallELO: {
     type: Number,
   },

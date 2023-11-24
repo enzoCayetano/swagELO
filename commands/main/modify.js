@@ -165,13 +165,14 @@ module.exports = {
 
       if (eloChange > 0) {
         await sendMessageToChannel('1175705395751305217', interaction, gainEloEmbed);  
+        userData.LastMatch = `+${eloChange}`
       } else if (eloChange < 0) {
         await sendMessageToChannel('1175705395751305217', interaction, loseEloEmbed);  
+        userData.LastMatch = `-${eloChange}`
       } else {
         await sendMessageToChannel('1175705395751305217', interaction, sameEloEmbed);  
       }
 
-      
       if (userData.ELO < 0) userData.ELO = 0 // NEGATIVE ELO NO MORE
 
       // Get roles

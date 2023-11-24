@@ -39,20 +39,17 @@ module.exports = {
             .setColor(0x8B0000)
             .addFields(
                 { name: 'Name', value: userData.username, inline: true },
-                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Join Date', value: joinDate, inline: true },
                 { name: 'ELO', value: userData.ELO.toString(), inline: true },
-                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Rank', value: userData.Rank, inline: true },
                 { name: 'Kills', value: userData.Kills.toString(), inline: true },
-                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Deaths', value: userData.Deaths.toString(), inline: true },
                 { name: 'Wins', value: userData.Wins.toString(), inline: true },
-                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'Losses', value: userData.Losses.toString(), inline: true },
                 { name: 'KDR', value: userData.KDR.toString(), inline: true },
-                { name: '\u200b', value: '\u200b', inline: true }, // Invisible field for spacing
                 { name: 'MVP', value: userData.MVP.toString(), inline: true },
+                { name: 'LM', value: userData.LastMatch, inline: true },
+                { name: 'Squad', value: userData.Squad, inline: true },
             )
             .setTimestamp()
             .setFooter({ 

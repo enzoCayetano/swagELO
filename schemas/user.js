@@ -52,6 +52,14 @@ const dataSchema = new Schema({
     default: 0,
     required: true,
   },
+  LastMatch: {
+    type: String,
+    default: "+0",
+  },
+  Squad: {
+    type: String,
+    default: "None",
+  }
 })
 
 module.exports = model('Data', dataSchema)

@@ -42,6 +42,8 @@ module.exports = {
                     Losses: 0,
                     KDR: 0,
                     MVP: 0,
+                    LM: '+0',
+                    Squad: 'None',
                 })
                 await newModel.save()
 

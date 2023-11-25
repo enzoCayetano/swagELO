@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonInteraction } = require('discord.js')
+const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js')
 const category = __dirname.split('/').pop()
 const UserModel = require('../../schemas/user.js')
 const SquadModel = require('../../schemas/squad.js');

@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/user.js');
+const SquadModel = require('../../schemas/squad.js');
 
 module.exports = {
   cooldown: 5,
@@ -155,22 +156,17 @@ module.exports = {
 
       const gainEloEmbed = new EmbedBuilder()
         .setColor('#00FF00') // Green color
-        .addFields({ name: 'ELO Change', value: `:arrow_up: <@${userData.userId}> gained **${eloChange} ELO!**` });
+        .addFields({ name: 'ELO Change', value: `:arrow_up: <@${userData.userId}> gained **${eloChange} ELO!**` })
       const loseEloEmbed = new EmbedBuilder()
         .setColor('#FF0000') // Red color
-        .addFields({ name: 'ELO Change', value: `:arrow_down: <@${userData.userId}> lost **${Math.abs(eloChange)} ELO!**` });
-      const sameEloEmbed = new EmbedBuilder()
-        .setColor('#FFFF00') // Yellow color
-        .addFields({ name: 'ELO Change', value: `:arrow_right: <@${userData.userId}> had **no change in ELO.**` });
+        .addFields({ name: 'ELO Change', value: `:arrow_down: <@${userData.userId}> lost **${Math.abs(eloChange)} ELO!**` })
 
       if (eloChange > 0) {
         await sendMessageToChannel('1175705395751305217', interaction, gainEloEmbed);  
         userData.LastMatch = `+${eloChange}`
       } else if (eloChange < 0) {
         await sendMessageToChannel('1175705395751305217', interaction, loseEloEmbed);  
-        userData.LastMatch = `-${eloChange}`
-      } else {
-        await sendMessageToChannel('1175705395751305217', interaction, sameEloEmbed);  
+        userData.LastMatch = `${eloChange}`
       }
 
       if (userData.ELO < 0) userData.ELO = 0 // NEGATIVE ELO NO MORE
@@ -246,14 +242,19 @@ module.exports = {
       interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')
 
       // Set nickname
-      const updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+      let updatedNick = ""
+      const existingSquad = await SquadModel.findOne({ 'members.userId': targetUser.id })
+      if (!existingSquad)
+        updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+      else
+        updatedNick = `[${existingSquad.tag}][${userData.ELO} ELO] ${userData.username}`
 
       const nickMember = interaction.guild.members.cache.get(targetUser.id)
 
       if (nickMember) {
         await nickMember.setNickname(updatedNick)
           .then(() => {
-            console.log(`Successfully set nickname ${nickMember} for ${targetUser.username}`)
+            console.log(`Successfully set nickname ${nickMember} for ${userData.username}`)
           })
           .catch(error => {
             console.error('Error setting username: ', error)

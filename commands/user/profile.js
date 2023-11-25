@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const Model = require('../../schemas/user.js')
+const SquadModel = require('../../schemas/squad.js');
 const category = __dirname.split('/').pop()
 
 module.exports = {
@@ -10,22 +11,27 @@ module.exports = {
         .addUserOption(option =>
             option.setName('user')
                 .setDescription('Which user would you like to view?')
-                .setRequired(true)),
+                .setRequired(false)),
     category,
     async execute(interaction) {
         // Get user from userOption
-        const targetUser = interaction.options.getUser('user')
+        const targetUser = interaction.options.getUser('user') || interaction.user
 
         // Query for user in db
         const query = {
             userId: targetUser.id,
             guildId: interaction.guild.id,
         }
-
         try {
             const userData = await Model.findOne(query)
             
             if (!userData) return interaction.reply('This user does not have an existing profile!')
+            
+            const existingSquad = await SquadModel.findOne({ 'members.userId': targetUser.id })
+            if (!existingSquad) {
+                userData.Squad = 'None'
+                userData.save()
+            }
             
             const member = await interaction.guild.members.fetch({
                 user: userData.userId,

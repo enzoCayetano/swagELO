@@ -176,8 +176,6 @@ module.exports = {
         } catch (error) {
           console.error('Error querying the database.', error)
         }
-
-        await interaction.reply('Successfully updated all profiles.')
       }
 
       async function sendMessageToChannel(channelId, interaction, embed) {

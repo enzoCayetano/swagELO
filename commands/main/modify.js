@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/user.js');
@@ -33,13 +33,6 @@ module.exports = {
     let hostRole = interaction.guild.roles.cache.find(r => r.name === global.HOSTROLE) || await interaction.guild.roles.fetch(global.HOSTROLE)
     if (!hostRole)
         return interaction.reply({ content: `You do not have access to this command. Only ${global.HOSTROLE}s can use this command.`, ephemeral: true })
-
-    // ELO vars
-    let eloGainOnWin = 125
-    let eloGainOnKill = 50
-    let eloGainOnMVP = 90
-    let eloLossOnLose = 60
-    let eloLossOnDeath = 20
 
     // Get all option data from userOption
     const targetUser = interaction.options.getUser('user')
@@ -112,135 +105,6 @@ module.exports = {
 
       await userData.save()
 
-      // CALCULATE KDR, ELO, AND RANK
-
-      // Calculate KDR (bunch of checks cus ts wasn't working)
-      if (userData.Kills != 0 && userData.Deaths != 0)
-        userData.KDR = parseFloat((userData.Kills / userData.Deaths).toFixed(2))
-
-      if (isNaN(userData.KDR)) {
-        console.log(userData.KDR)
-        userData.KDR = 0
-      }
-
-      if (isNaN(userData.ELO)) {
-        console.log(userData.ELO)
-        userData.ELO = 0
-      }
-
-      // Calculate ELO
-      if (userData.ELO >= 6000) {
-        eloGainOnWin = 60
-        eloGainOnKill = 30
-        eloGainOnMVP = 50
-        eloLossOnLose = 20
-        eloLossOnDeath = 10
-      }
-
-      let eloWin = 0
-      let eloKill = 0
-      let eloMVP = 0
-      let eloLose = 0
-      let eloDeath = 0
-
-      eloWin = userData.Wins * eloGainOnWin
-      eloKill = userData.Kills * eloGainOnKill
-      eloMVP = userData.MVP * eloGainOnMVP
-      eloLose = userData.Losses * eloLossOnLose
-      eloDeath = userData.Deaths * eloLossOnDeath
-
-      // #gains-losses
-      let previousELO = userData.ELO
-      userData.ELO = eloWin + eloKill + eloMVP - eloLose - eloDeath
-      let eloChange = userData.ELO - previousELO
-
-      const gainEloEmbed = new EmbedBuilder()
-        .setColor('#00FF00') // Green color
-        .addFields({ name: 'ELO Change', value: `:arrow_up: <@${userData.userId}> gained **${eloChange} ELO!**` })
-      const loseEloEmbed = new EmbedBuilder()
-        .setColor('#FF0000') // Red color
-        .addFields({ name: 'ELO Change', value: `:arrow_down: <@${userData.userId}> lost **${Math.abs(eloChange)} ELO!**` })
-
-      if (eloChange > 0) {
-        await sendMessageToChannel('1175705395751305217', interaction, gainEloEmbed);  
-        userData.LastMatch = `+${eloChange}`
-      } else if (eloChange < 0) {
-        await sendMessageToChannel('1175705395751305217', interaction, loseEloEmbed);  
-        userData.LastMatch = `${eloChange}`
-      }
-
-      if (userData.ELO < 0) userData.ELO = 0 // NEGATIVE ELO NO MORE
-
-      // Get roles
-      const roles = {
-        'S': interaction.guild.roles.cache.find(role => role.name === 'S'),
-        'A+': interaction.guild.roles.cache.find(role => role.name === 'A+'),
-        'A-': interaction.guild.roles.cache.find(role => role.name === 'A-'),
-        'B+': interaction.guild.roles.cache.find(role => role.name === 'B+'),
-        'B-': interaction.guild.roles.cache.find(role => role.name === 'B-'),
-        'C+': interaction.guild.roles.cache.find(role => role.name === 'C+'),
-        'C-': interaction.guild.roles.cache.find(role => role.name === 'C-'),
-        'D+': interaction.guild.roles.cache.find(role => role.name === 'D+'),
-        'D-': interaction.guild.roles.cache.find(role => role.name === 'D-'),
-        'F+': interaction.guild.roles.cache.find(role => role.name === 'F+'),
-        'F-': interaction.guild.roles.cache.find(role => role.name === 'F-'),
-      }
-      
-      // Calculate RANK
-      if (userData.ELO >= 6000)
-        userData.Rank = 'S'
-      else if (userData.ELO > 5000)
-        userData.Rank = 'A+'
-      else if (userData.ELO > 4500)
-        userData.Rank = 'A-'
-      else if (userData.ELO > 4000)
-        userData.Rank = 'B+'
-      else if (userData.ELO > 3500)
-        userData.Rank = 'B-'
-      else if (userData.ELO > 3000)
-        userData.Rank = 'C+'
-      else if (userData.ELO > 2500)
-        userData.Rank = 'C-'
-      else if (userData.ELO > 2000)
-        userData.Rank = 'D+'
-      else if (userData.ELO > 1500)
-        userData.Rank = 'D-'
-      else if (userData.ELO > 1000)
-        userData.Rank = 'F+'
-      else if (userData.ELO > 500)
-        userData.Rank = 'F-'
-      else
-        userData.Rank = 'N' // NON RANKED
-
-      Object.values(roles).forEach((role) => {
-        const member = interaction.guild.members.cache.get(userData.userId)
-      
-        if (member && member.roles.cache.has(role.id)) {
-          member.roles.remove(role)
-            .then(() => console.log(`Removed role ${role.name} from ${userData.username}`))
-            .catch(error => console.error('Error removing role: ', error))
-        }
-      })
-        
-      const roleToAdd = roles[userData.Rank]
-
-      if (roleToAdd) {
-        const member = interaction.guild.members.cache.get(userData.userId)
-
-        if (member) {
-          member.roles.add(roleToAdd)
-            .then(() => console.log(`Added role ${roleToAdd.name} to ${userData.username}`))
-            .catch(error => console.error('Error adding role: ', error))
-        } else {
-          console.error('Member not found.')
-        }
-      } else {
-        console.error('Role not found for current rank.')
-      }
-
-      await userData.save()
-      interaction.followUp('Calculating KDR, ELO & RANK. Saved to database.')
-
       // Set nickname
       let updatedNick = ""
       const existingSquad = await SquadModel.findOne({ 'members.userId': targetUser.id })
@@ -266,15 +130,6 @@ module.exports = {
     } catch (error) {
       console.error('Error querying the database.', error)
       await interaction.reply(`An error occurred: ${error}`)
-    }
-
-    async function sendMessageToChannel(channelId, interaction, embed) {
-      try {
-        const channel = await interaction.client.channels.fetch(channelId);
-        await channel.send({ embeds: [embed] });
-      } catch (error) {
-        console.error(`Error sending message to channel: ${error}`);
-      }
     }
   }
 } 

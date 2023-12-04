@@ -17,7 +17,7 @@ module.exports = {
     const userData = await UserModel.findOne(query)
 
     if (!userData) return interaction.reply('You do not have an existing profile! Create one first to create a squad!')
-    if (userData.ELO < 1500) return interaction.reply('You do not meet the requirements to create a squad. REQUIRED: 1500 ELO (Rank D-)')
+    if (userData.ELO < 200) return interaction.reply('You do not meet the requirements to create a squad. REQUIRED: 200 ELO')
 
     const modal = new ModalBuilder()
       .setCustomId('create_squad')

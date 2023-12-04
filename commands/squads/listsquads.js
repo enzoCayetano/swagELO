@@ -17,7 +17,7 @@ module.exports = {
         const squadList = allSquads.map((squad) => {
           const memberList = squad.members.map((member) => `${member.username}`).join(', ')
           const description = squad.description || 'No description available.'
-          return `**${squad.name}**: ${description}\nMembers: ${memberList || 'No members.'}`
+          return `**${squad.name}** (ELO: ${squad.overallELO || 0}): ${description}\nMembers: ${memberList || 'No members.'}`
         })
 
         const response = `List of squads:\n${squadList.join('\n\n')}`

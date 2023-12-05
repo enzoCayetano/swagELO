@@ -1,4 +1,4 @@
-const { SlashCommandBuilder,  ActionRowBuilder, ButtonBuilder } = require('discord.js')
+const { SlashCommandBuilder,  ActionRowBuilder, ButtonBuilder, ButtonInteraction } = require('discord.js')
 const category = __dirname.split('/').pop()
 const UserModel = require('../../schemas/user.js')
 const SquadModel = require('../../schemas/squad.js');
@@ -9,11 +9,9 @@ module.exports = {
     .setDescription('Leave current squad.'),
     category,
     async execute(interaction) {
-      const user = interaction.user
-
       const query = {
-        userId: user.id,
-        guildId: interaction.user.id,
+        userId: interaction.user.id,
+        guildId: interaction.guild.id,
       }
 
       try {
@@ -21,25 +19,96 @@ module.exports = {
 
         if (!userData || userData.Squad === 'None') return interaction.reply('You are not in a squad.')
 
-        const squadData = await SquadModel.findOne({ 'members.userId': user.id })
+
+        const squadData = await SquadModel.findOne({ 'members.userId': interaction.user.id })
 
         if (!squadData) return interaction.reply('Error: Squad not found.')
+
+        const isOwner = squadData.owner === interaction.user.id
 
         const leaveSquad = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('confirm_leave')
             .setLabel('Leave')
-            .setStyle(2),
+            .setStyle(4),
           new ButtonBuilder()
             .setCustomId('cancel_leave')
             .setLabel('Cancel')
+            .setStyle(2),
+        )
+
+        const deleteSquad = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('confirm_delete')
+            .setLabel('Delete')
             .setStyle(4),
+          new ButtonBuilder()
+            .setCustomId('cancel_delete')
+            .setLabel('Cancel')
+            .setStyle(2),
         )
 
         await interaction.reply({
-          content: 'Are you sure you want to leave this squad?',
-          components: [leaveSquad]
+          content: `Are you sure you want to ${isOwner ? 'delete' : 'leave'} this squad?`,
+          components: [isOwner ? deleteSquad : leaveSquad]
         })
+
+        const filter = (i) => i.isButton()
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
+
+        collector.on('collect', async (buttonInteraction) => {
+          const customId = buttonInteraction.customId
+
+          switch (customId) {
+            case 'confirm_leave':
+              await handleLeave()
+              break
+            case 'cancel_leave':
+              await interaction.editReply('Cancelled.')
+              break
+            case 'confirm_delete':
+              await handleDelete()
+              break
+            case 'cancel_delete':
+              await interaction.editReply('Cancelled.')
+              break
+          }
+
+          console.log('Stopped collector.')
+          collector.stop()
+        })
+
+        collector.on('end', (collected, reason) => {
+          // console.log(collected)
+          if (reason === 'time') {
+            interaction.editReply('Button interaction time expired.')
+          } else if (reason === 'user') {
+            const disabledSquadRow = isOwner ? deleteSquad : leaveSquad
+            disabledSquadRow.components.forEach((component) => {
+              component.setDisabled(true)
+            })
+            
+            interaction.editReply({ components: [disabledSquadRow] })
+          }
+        })
+
+        async function handleLeave() {
+          squadData.members = squadData.members.filter(member => member.userId !== interaction.user.id)
+          await squadData.save()
+
+          userData.Squad = 'None'
+          await userData.save()
+
+          interaction.editReply(`Left **${squadData.name}**!`)
+        }
+
+        async function handleDelete() {
+          await SquadModel.deleteOne({ _id: squadData._id })
+          userData.Squad = 'None'
+          await userData.save()
+          
+          interaction.editReply(`Deleted **${squadData.name}**!`)
+        }
       } catch (error) {
         console.error('Error querying the database: ', error)
         interaction.reply('An error has occurred. See console.')

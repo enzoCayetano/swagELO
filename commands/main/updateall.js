@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/user.js');
 const SquadModel = require('../../schemas/squad.js');

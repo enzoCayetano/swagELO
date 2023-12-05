@@ -11,11 +11,11 @@ module.exports = {
     category,
     async execute(interaction) {
       // ELO vars
-      let eloGainOnWin = 25
-      let eloGainOnKill = 10
+      let eloGainOnWin = 30
+      let eloLossOnLose = 18
+      let eloGainOnKill = 15
+      let eloLossOnDeath = 13
       let eloGainOnMVP = 9
-      let eloLossOnLose = 12
-      let eloLossOnDeath = 8
 
       const members = Array.from(interaction.guild.members.cache.values())
 
@@ -32,7 +32,7 @@ module.exports = {
         try {
           const userData = await Model.findOne(query)
 
-          if (userData) {
+          if (userData && userData.NeedsUpdate) {
             // CALCULATE KDR, ELO, AND RANK
 
             // Calculate KDR (bunch of checks cus ts wasn't working)
@@ -68,10 +68,10 @@ module.exports = {
 
             const gainEloEmbed = new EmbedBuilder()
               .setColor('#00FF00') // Green color
-              .addFields({ name: 'ELO Change', value: `:arrow_up: <@${userData.userId}> gained **${eloChange} ELO!**` })
+              .addFields({ name: 'ELO Change', value: `😍 <@${userData.userId}> gained **${eloChange} ELO!**` })
             const loseEloEmbed = new EmbedBuilder()
               .setColor('#FF0000') // Red color
-              .addFields({ name: 'ELO Change', value: `:arrow_down: <@${userData.userId}> lost **${Math.abs(eloChange)} ELO!**` })
+              .addFields({ name: 'ELO Change', value: `💔 <@${userData.userId}> lost **${Math.abs(eloChange)} ELO!**` })
 
             if (eloChange > 0) {
               await sendMessageToChannel('1175705395751305217', interaction, gainEloEmbed);  
@@ -170,6 +170,7 @@ module.exports = {
               console.log(`Bot does not have permission to set nickname for ${member.user.tag}`)
             }
 
+            userData.NeedsUpdate = false
             await userData.save()
             console.log(`Updated profile for ${member.user.tag}`)
           }

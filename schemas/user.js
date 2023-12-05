@@ -59,6 +59,10 @@ const dataSchema = new Schema({
   Squad: {
     type: String,
     default: "None",
+  },
+  NeedsUpdate: {
+    type: Boolean,
+    default: false,
   }
 })
 

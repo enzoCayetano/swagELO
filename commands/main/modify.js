@@ -103,6 +103,7 @@ module.exports = {
                 Losses: ${(userData.Losses !== formerLosses) ? `${formerLosses} => ${userData.Losses}` : formerLosses}
                 MVP: ${(userData.MVP !== formerMVPs) ? `${formerMVPs} => ${userData.MVP}` : formerMVPs}`)
 
+      userData.NeedsUpdate = true
       await userData.save()
 
       // Set nickname

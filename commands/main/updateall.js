@@ -139,9 +139,13 @@ module.exports = {
               const member = interaction.guild.members.cache.get(userData.userId)
 
               if (member) {
-                member.roles.add(roleToAdd)
-                  .then(() => console.log(`Added role ${roleToAdd.name} to ${userData.username}`))
-                  .catch(error => console.error('Error adding role: ', error))
+                if (!member.roles.cache.has(roleToAdd.id)) {
+                  member.roles.add(roleToAdd)
+                    .then(() => console.log(`Added role ${roleToAdd.name} to ${userData.username}`))
+                    .catch(error => console.error('Error adding role: ', error))
+                } else {
+                  console.log(`${userData.username} already has the role ${roleToAdd.name}`)
+                }
               } else {
                 console.error('Member not found.')
               }

@@ -82,6 +82,13 @@ module.exports = {
           // console.log(collected)
           if (reason === 'time') {
             interaction.editReply('Button interaction time expired.')
+
+            const disabledSquadRow = isOwner ? deleteSquad : leaveSquad
+            disabledSquadRow.components.forEach((component) => {
+              component.setDisabled(true)
+            })
+
+            interaction.editReply({ components: [disabledSquadRow] })
           } else if (reason === 'user') {
             const disabledSquadRow = isOwner ? deleteSquad : leaveSquad
             disabledSquadRow.components.forEach((component) => {

@@ -66,6 +66,12 @@ module.exports = {
     })
 
     collector.on('collect', async (buttonInteraction) => {
+      buttonRow.components.forEach((component) => {
+        component.setDisabled(true)
+      })
+
+      interaction.editReply({ components: [buttonRow] })
+
       if (buttonInteraction.customId === 'accept_invite') {
         await buttonInteraction.reply(`You have accepted the invitation! Welcome to **${squad.name}**`)
         

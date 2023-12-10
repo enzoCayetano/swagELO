@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const global = require('../../roles.js');
 const category = __dirname.split('/').pop();
 const Model = require('../../schemas/user.js');
@@ -96,38 +96,91 @@ module.exports = {
         userData.MVP = setMVPs
       }
 
-      await interaction.reply(`Changed ${userData.username}'s STATS:
-                Kills: ${(userData.Kills !== formerKills) ? `${formerKills} => ${userData.Kills}` : formerKills}
-                Deaths: ${(userData.Deaths !== formerDeaths) ? `${formerDeaths} => ${userData.Deaths}` : formerDeaths}
-                Wins: ${(userData.Wins !== formerWins) ? `${formerWins} => ${userData.Wins}` : formerWins}
-                Losses: ${(userData.Losses !== formerLosses) ? `${formerLosses} => ${userData.Losses}` : formerLosses}
-                MVP: ${(userData.MVP !== formerMVPs) ? `${formerMVPs} => ${userData.MVP}` : formerMVPs}`)
+      const embedChanges = new EmbedBuilder()
+      .setColor(0x8B0000)
+      .setTitle('Pending Stat Changes')
+      .addFields(
+        { name: 'User', value: userData.username },
+        { name: 'Kills', value: (userData.Kills !== formerKills) ? `${formerKills.toString()} => ${userData.Kills.toString()} ✅` : formerKills.toString(), inline: true },
+        { name: 'Deaths', value: (userData.Deaths !== formerDeaths) ? `${formerDeaths.toString()} => ${userData.Deaths.toString()} ✅` : formerDeaths.toString(), inline: true },
+        { name: '\u200B', value: '\u200B', inline: true }, // Empty field for whitespace
+        { name: 'Wins', value: (userData.Wins !== formerWins) ? `${formerWins.toString()} => ${userData.Wins.toString()} ✅` : formerWins.toString(), inline: true },
+        { name: 'Losses', value: (userData.Losses !== formerLosses) ? `${formerLosses.toString()} => ${userData.Losses.toString()} ✅` : formerLosses.toString(), inline: true },
+        { name: '\u200B', value: '\u200B', inline: true }, // Empty field for whitespace
+        { name: 'MVPs', value: (userData.MVP !== formerMVPs) ? `${formerMVPs.toString()} => ${userData.MVP.toString()} ✅` : formerMVPs.toString(), inline: true }
+      )
 
-      userData.NeedsUpdate = true
-      await userData.save()
+      const confirm = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('confirm_changes')
+          .setLabel('Confirm')
+          .setStyle(3),
+        new ButtonBuilder()
+          .setCustomId('cancel_changes')
+          .setLabel('Cancel')
+          .setStyle(2),
+      )
 
-      // Set nickname
-      let updatedNick = ""
-      const existingSquad = await SquadModel.findOne({ 'members.userId': targetUser.id })
-      if (!existingSquad)
-        updatedNick = `[${userData.ELO} ELO] ${userData.username}`
-      else
-        updatedNick = `[${existingSquad.tag}][${userData.ELO} ELO] ${userData.username}`
+      await interaction.reply({ embeds: [embedChanges], components: [confirm] })
 
-      const nickMember = interaction.guild.members.cache.get(targetUser.id)
+      const filter = (i) => i.customId === 'confirm_changes' || i.customId === 'cancel_changes'
+      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
 
-      if (nickMember) {
-        await nickMember.setNickname(updatedNick)
-          .then(() => {
-            console.log(`Successfully set nickname ${nickMember} for ${userData.username}`)
+      collector.on('collect', async (i) => {
+        try {
+          if (i.customId === 'confirm_changes') {
+            userData.NeedsUpdate = true
+            await userData.save()
+      
+            // Set nickname
+            let updatedNick = ""
+            const existingSquad = await SquadModel.findOne({ 'members.userId': targetUser.id })
+            if (!existingSquad)
+              updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+            else
+              updatedNick = `[${existingSquad.tag}][${userData.ELO} ELO] ${userData.username}`
+      
+            const nickMember = interaction.guild.members.cache.get(targetUser.id)
+      
+            if (nickMember) {
+              await nickMember.setNickname(updatedNick)
+                .then(() => {
+                  console.log(`Successfully set nickname ${nickMember} for ${userData.username}`)
+                })
+                .catch(error => {
+                  console.error('Error setting username: ', error)
+                })
+            } else {
+              console.log('Member not found.')
+            }
+
+            await interaction.followUp('Changes saved!')
+          } else if (i.customId === 'cancel_changes') {
+            await interaction.followUp('Modify cancelled.')
+          }
+        } catch (error) {
+          console.error('Error during collection handling', error)
+        } finally {
+          collector.stop()
+          confirm.components.forEach((component) => {
+            component.setDisabled(true)
           })
-          .catch(error => {
-            console.error('Error setting username: ', error)
-          })
-      } else {
-        console.log('Member not found.')
-      }
+  
+          interaction.editReply({ components: [confirm] })
+        }
 
+        collector.on('end', (collected, reason) => {
+          confirm.components.forEach((component) => {
+            component.setDisabled(true)
+          })
+
+          interaction.editReply({ components: [confirm] })
+
+          if (reason === 'time') {
+            interaction.followUp({ content: 'Collection timed out.', ephemeral: true })
+          }
+        })
+      })
     } catch (error) {
       console.error('Error querying the database.', error)
       await interaction.reply(`An error occurred: ${error}`)

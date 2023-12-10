@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js')
 const Model = require('../../schemas/user.js')
+const SquadModel = require('../../schemas/squad.js');
 const category = __dirname.split('/').pop()
 
 module.exports = {
@@ -10,6 +11,11 @@ module.exports = {
   async execute(interaction) {
     const query = {
       userId: interaction.user.id,
+      guildId: interaction.guild.id,
+    }
+
+    const squadQuery = {
+      'members.userId': interaction.user.id,
       guildId: interaction.guild.id,
     }
 
@@ -38,8 +44,33 @@ module.exports = {
           if (i.customId === 'confirm_delete') {
             const userData = await Model.findOneAndDelete(query)
             if (!userData) return interaction.reply('No profile found.')
-            i.deferUpdate()
-            await interaction.followUp('Your profile has been successfully deleted.')
+            
+            const squad = await SquadModel.findOne(squadQuery)
+
+            if (squad) {
+              const isOwner = squad.owner === interaction.user.id
+              const isOnlyMember = squad.members.length === 1 && squad.members[0].userId === interaction.user.id
+
+              if (isOwner && isOnlyMember) {
+                await SquadModel.findByIdAndDelete(squad._id)
+                i.deferUpdate()
+                await interaction.followUp('Your profile has been successfully deleted and your squad disbanded.')
+              } else {
+                const squadUpdate = {
+                  $pull: {
+                    members: { userId: interaction.user.id },
+                  },
+                }
+
+                const updatedSquad = await SquadModel.findOneAndUpdate(squadQuery, squadUpdate, { new: true })
+
+                i.deferUpdate()
+                await interaction.followUp('Your profile has been successfully deleted and you have left your squad.')
+              }
+            } else {
+              i.deferUpdate()
+              await interaction.followUp('Your profile has been successfully deleted.')
+            }
           } else {
             i.deferUpdate()
             await interaction.followUp({ content: 'Data wipe canceled.', components: [] })

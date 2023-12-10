@@ -36,6 +36,13 @@ module.exports = {
         if (i.user.id === interaction.user.id) {
           if (i.customId === 'confirm_wipe') {
             await Model.deleteMany()
+
+            interaction.guild.members.cache.forEach(async (member) => {
+              if (member.manageable) {
+                await member.setNickname(null)
+              }
+            })
+
             await interaction.editReply({ content: 'Data wipe successful.', components: [] })
           } else {
             await interaction.editReply({ content: 'Data wipe canceled.', components: [] })

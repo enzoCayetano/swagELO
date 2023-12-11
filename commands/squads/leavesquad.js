@@ -19,7 +19,6 @@ module.exports = {
 
         if (!userData || userData.Squad === 'None') return interaction.reply('You are not in a squad.')
 
-
         const squadData = await SquadModel.findOne({ 'members.userId': interaction.user.id })
 
         if (!squadData) return interaction.reply('Error: Squad not found.')
@@ -61,16 +60,26 @@ module.exports = {
 
           switch (customId) {
             case 'confirm_leave':
-              await handleLeave()
+              squadData.members = squadData.members.filter(member => member.userId !== interaction.user.id)
+              await squadData.save()
+
+              userData.Squad = 'None'
+              await userData.save()
+
+              await buttonInteraction.reply(`Left **${squadData.name}**!`)
               break
             case 'cancel_leave':
-              await interaction.editReply('Cancelled.')
+              await buttonInteraction.reply('Cancelled.')
               break
             case 'confirm_delete':
-              await handleDelete()
+              await SquadModel.deleteOne({ _id: squadData._id })
+              userData.Squad = 'None'
+              await userData.save()
+              
+              await buttonInteraction.reply(`Deleted **${squadData.name}**!`)
               break
             case 'cancel_delete':
-              await interaction.editReply('Cancelled.')
+              await buttonInteraction.reply('Cancelled.')
               break
           }
 
@@ -98,24 +107,6 @@ module.exports = {
             interaction.editReply({ components: [disabledSquadRow] })
           }
         })
-
-        async function handleLeave() {
-          squadData.members = squadData.members.filter(member => member.userId !== interaction.user.id)
-          await squadData.save()
-
-          userData.Squad = 'None'
-          await userData.save()
-
-          interaction.editReply(`Left **${squadData.name}**!`)
-        }
-
-        async function handleDelete() {
-          await SquadModel.deleteOne({ _id: squadData._id })
-          userData.Squad = 'None'
-          await userData.save()
-          
-          interaction.editReply(`Deleted **${squadData.name}**!`)
-        }
       } catch (error) {
         console.error('Error querying the database: ', error)
         interaction.reply('An error has occurred. See console.')

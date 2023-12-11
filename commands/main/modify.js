@@ -154,9 +154,9 @@ module.exports = {
               console.log('Member not found.')
             }
 
-            await interaction.followUp('Changes saved!')
+            await i.reply('Changes saved!')
           } else if (i.customId === 'cancel_changes') {
-            await interaction.followUp('Modify cancelled.')
+            await i.reply('Modify cancelled.')
           }
         } catch (error) {
           console.error('Error during collection handling', error)
@@ -174,7 +174,7 @@ module.exports = {
             component.setDisabled(true)
           })
 
-          interaction.editReply({ components: [confirm] })
+          i.editReply({ components: [confirm] })
 
           if (reason === 'time') {
             interaction.followUp({ content: 'Collection timed out.', ephemeral: true })

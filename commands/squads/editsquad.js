@@ -50,7 +50,7 @@ module.exports = {
           .setLabel('Squad Description')
           .setPlaceholder('Edit your squad description...')
           .setStyle(TextInputStyle.Paragraph)
-          .setMaxLength(100)
+          .setMaxLength(1000)
           .setRequired(true)
           .setValue(squadData.description)
 

@@ -37,6 +37,7 @@ module.exports = {
         if (i.user.id === interaction.user.id) {
           if (i.customId === 'confirm_wipe') {
             await Model.deleteMany()
+            await SquadModel.deleteMany()
 
             interaction.guild.members.cache.forEach(async (member) => {
               if (member.manageable) {

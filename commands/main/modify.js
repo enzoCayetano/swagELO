@@ -4,6 +4,13 @@ const category = __dirname.split('/').pop();
 const Model = require('../../schemas/user.js');
 const SquadModel = require('../../schemas/squad.js');
 
+// TODO
+/*
+ * Changed user.js
+ * Accomodate those changes
+ * Switch to JSON handling for modifications
+*/
+
 module.exports = {
   cooldown: 5,
   data: new SlashCommandBuilder()

@@ -45,7 +45,7 @@ module.exports = {
       .setLabel('Squad Description')
       .setPlaceholder('Set a description...')
       .setStyle(TextInputStyle.Paragraph)
-      .setMaxLength(100)
+      .setMaxLength(1000)
       .setRequired(true)
 
     const firstRow = new ActionRowBuilder().addComponents(nameInput)

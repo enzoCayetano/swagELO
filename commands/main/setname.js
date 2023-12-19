@@ -33,7 +33,7 @@ module.exports = {
       await userData.save()
 
       // Set nickname
-      const updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+      const updatedNick = `${userData.username}`
 
       const nickMember = interaction.guild.members.cache.get(targetUser.id)
 

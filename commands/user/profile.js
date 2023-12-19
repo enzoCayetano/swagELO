@@ -41,29 +41,66 @@ module.exports = {
 
             // Created embed builder    
             const embedProfile = new EmbedBuilder()
-            .setAuthor({ name: `${targetUser.username}`, iconURL: targetUser.displayAvatarURL({ dynamic: true, size: 256 }) })
-            .setColor(0x8B0000)
-            .addFields(
-                { name: '👨 Name', value: userData.username, inline: true },
-                { name: '📆 Join Date', value: joinDate, inline: true },
-                { name: '💖 ELO', value: userData.ELO.toString(), inline: true },
-                { name: '🔥 Rank', value: userData.Rank, inline: true },
-                { name: '💥 Kills', value: userData.Kills.toString(), inline: true },
-                { name: '💀 Deaths', value: userData.Deaths.toString(), inline: true },
-                { name: '🏆 Wins', value: userData.Wins.toString(), inline: true },
-                { name: '🪦 Losses', value: userData.Losses.toString(), inline: true },
-                { name: '🥹 KDR', value: userData.KDR.toString(), inline: true },
-                { name: '💪 MVP', value: userData.MVP.toString(), inline: true },
-                { name: '💯 Last Match', value: userData.LastMatch + ' ELO', inline: true },
-                { name: '🫡 Squad', value: userData.Squad, inline: true },
-            )
-            .setTimestamp()
-            .setFooter({ 
-                text: 'ARCM', 
-                iconURL: 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
-            })
+                .setAuthor({ name: `${targetUser.username}` })
+                .setThumbnail(targetUser.displayAvatarURL({ dynamic: true, size: 256 })) // Set thumbnail to user's profile picture
+                .setColor(0x8B0000)
+                .addFields(
+                    { name: '👨 Name', value: userData.username, inline: true },
+                    { name: '📆 Join Date', value: joinDate, inline: true },
+                    { name: '\u200B', value: '\u200B', inline: true }, // Empty field for whitespace
+                    { name: '💖 ELO', value: userData.ELO.toString(), inline: true },
+                    { name: '🔥 Rank', value: userData.Rank, inline: true },
+                    { name: '\u200B', value: '\u200B', inline: true }, // Empty field for whitespace
+                    { name: '🫡 Squad', value: userData.Squad, inline: true },
+                )
+                .setTimestamp()
+                .setFooter({ 
+                    text: 'ARCM', 
+                    iconURL: 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
+                })
 
-            await interaction.reply({ embeds: [embedProfile] })
+            const unrankedEmbed = new EmbedBuilder()
+                .setTitle('Unranked Statistics')    
+                .setColor(0x8B0000)
+                .addFields(
+                    { name: '💥 Kills', value: userData.Unranked.Kills.toString(), inline: true },
+                    { name: '💀 Deaths', value: userData.Unranked.Deaths.toString(), inline: true },
+                    { name: '🏆 Wins', value: userData.Unranked.Wins.toString(), inline: true },
+                    { name: '🪦 Losses', value: userData.Unranked.Losses.toString(), inline: true },
+                    { name: '🥹 KDR', value: userData.Unranked.KDR.toString(), inline: true },
+                    { name: '💪 MVP', value: userData.Unranked.MVP.toString(), inline: true },
+                    { name: '💯 Last Match', value: userData.Unranked.LastMatch + ' ELO', inline: true },
+                )
+                .setTimestamp()
+                .setFooter({ 
+                    text: 'ARCM', 
+                    iconURL: 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
+                })
+
+            const rankedEmbed = new EmbedBuilder()
+                .setTitle('Ranked Statistics')
+                .setColor(0x8B0000)
+                .addFields(
+                    { name: '💥 Kills', value: userData.Ranked.Kills.toString(), inline: true },
+                    { name: '💀 Deaths', value: userData.Ranked.Deaths.toString(), inline: true },
+                    { name: '🏆 Wins', value: userData.Ranked.Wins.toString(), inline: true },
+                    { name: '🪦 Losses', value: userData.Ranked.Losses.toString(), inline: true },
+                    { name: '🥹 KDR', value: userData.Ranked.KDR.toString(), inline: true },
+                    { name: '💪 MVP', value: userData.Ranked.MVP.toString(), inline: true },
+                    { name: '💯 Last Match', value: userData.Ranked.LastMatch + ' ELO', inline: true },
+                )
+                .setTimestamp()
+                .setFooter({ 
+                    text: 'ARCM', 
+                    iconURL: 'https://s3.amazonaws.com/challonge_app/organizations/images/000/055/281/hdpi/ARCL_Logo_Square.png?1544117144'
+                })
+            
+            
+            /*
+             * 
+             */
+
+            await interaction.reply({ embeds: [embedProfile, unrankedEmbed, rankedEmbed] })
         } catch (error) {
             console.error('Error querying the database.', error)
             await interaction.reply('Error querying the database. Check the console for more details.')

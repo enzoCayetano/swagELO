@@ -32,7 +32,10 @@ module.exports = {
       if (!response.ok) throw new Error(`Error fetching the file: ${response.statusText}`)
       
       const rawData = await response.text()
-      const receivedData = JSON.parse(rawData)
+      const playerModifications = JSON.parse(rawData)
+
+      const gamemode = playerModifications.gamemode || "Unranked" // defaults to Unranked
+      const receivedData = playerModifications.modifications || []
 
       const modificationsSummary = []
 
@@ -51,7 +54,7 @@ module.exports = {
           continue
         }
 
-        const modifications = playerModification.modifications
+        const modifications = playerModification
 
         userData.Kills += modifications.kills || 0
         userData.Deaths += modifications.deaths || 0
@@ -60,6 +63,7 @@ module.exports = {
         userData.MVP += modifications.mvp || 0
 
         const userChanges = {
+          userId: userData.userId,
           username: userData.username,
           kills: modifications.kills || 0,
           deaths: modifications.deaths || 0,
@@ -74,10 +78,11 @@ module.exports = {
       const embedChanges = new EmbedBuilder()
         .setColor(0x8B0000)
         .setTitle('Pending Stat Changes')
+        .setDescription(`Gamemode: ${gamemode}`)
 
       for (const userChanges of modificationsSummary) {
         embedChanges.addFields(
-          { name: 'User', value: userChanges.username },
+          { name: 'User', value: `<@${userChanges.userId}>` },
           { name: 'Kills', value: userChanges.kills.toString(), inline: true },
           { name: '\u200B', value: '\u200B', inline: true }, // Empty field for whitespace
           { name: 'Deaths', value: userChanges.deaths.toString(), inline: true },
@@ -129,9 +134,9 @@ module.exports = {
               let updatedNick = ""
               const existingSquad = await SquadModel.findOne({ 'members.userId': targetUser.id })
               if (!existingSquad)
-                updatedNick = `[${userData.ELO} ELO] ${userData.username}`
+                updatedNick = `${userData.username}`
               else
-                updatedNick = `[${existingSquad.tag}][${userData.ELO} ELO] ${userData.username}`
+                updatedNick = `${existingSquad.tag.toUpperCase()} ${userData.username}`
         
               const nickMember = interaction.guild.members.cache.get(targetUser.id)
         

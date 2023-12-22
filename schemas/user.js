@@ -63,10 +63,6 @@ const dataSchema = new Schema({
     type: String,
     default: "None",
   },
-  NeedsUpdate: {
-    type: Boolean,
-    default: false,
-  },
   Unranked: {
     type: gameModeSchema,
     default: {},

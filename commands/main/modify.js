@@ -56,11 +56,23 @@ module.exports = {
 
         const modifications = playerModification
 
-        userData.Kills += modifications.kills || 0
-        userData.Deaths += modifications.deaths || 0
-        userData.Wins += modifications.wins || 0
-        userData.Losses += modifications.losses || 0
-        userData.MVP += modifications.mvp || 0
+        if (gamemode === 'Ranked') {
+          userData.Ranked.Kills += modifications.kills || 0
+          userData.Ranked.Deaths += modifications.deaths || 0
+          userData.Ranked.Wins += modifications.wins || 0
+          userData.Ranked.Losses += modifications.losses || 0
+          userData.Ranked.MVP += modifications.mvp || 0
+        } else if (gamemode === 'Unranked') {
+          userData.Unranked.Kills += modifications.kills || 0
+          userData.Unranked.Deaths += modifications.deaths || 0
+          userData.Unranked.Wins += modifications.wins || 0
+          userData.Unranked.Losses += modifications.losses || 0
+          userData.Unranked.MVP += modifications.mvp || 0
+        } else {
+          console.log('ERROR: Invalid gamemode.')
+        }
+
+        // Also add LastMatch
 
         const userChanges = {
           userId: userData.userId,
@@ -127,8 +139,24 @@ module.exports = {
                 continue
               }
 
-              userData.NeedsUpdate = true
+              if (gamemode === 'Ranked') {
+                userData.Ranked.Kills += playerModification.kills || 0
+                userData.Ranked.Deaths += playerModification.deaths || 0
+                userData.Ranked.Wins += playerModification.wins || 0
+                userData.Ranked.Losses += playerModification.losses || 0
+                userData.Ranked.MVP += playerModification.mvp || 0
+              } else if (gamemode === 'Unranked') {
+                userData.Unranked.Kills += playerModification.kills || 0
+                userData.Unranked.Deaths += playerModification.deaths || 0
+                userData.Unranked.Wins += playerModification.wins || 0
+                userData.Unranked.Losses += playerModification.losses || 0
+                userData.Unranked.MVP += playerModification.mvp || 0
+              } else {
+                console.log('ERROR: Invalid gamemode.')
+              }
+
               await userData.save()
+              console.log(userData)
 
               // Set nickname
               let updatedNick = ""

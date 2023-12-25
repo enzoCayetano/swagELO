@@ -2,6 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const category = __dirname.split('/').pop()
 const Model = require('../../schemas/user.js');
 
+// FiNISH
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
@@ -10,10 +12,8 @@ module.exports = {
       option.setName('type')
         .setDescription('Select leaderboard to show.')
         .setRequired(true)
-        .addChoices({ name: 'ELO', value: 'elo' })
-        .addChoices({ name: 'Kills', value: 'kills' })
-        .addChoices({ name: 'Deaths', value: 'deaths' })
-        .addChoices({ name: 'MVP', value: 'mvp' })
+        .addChoices({ name: 'Ranked', value: 'ranked' })
+        .addChoices({ name: 'Unranked', value: 'unranked' })
     ),
   category,
   async execute(interaction) {
@@ -22,20 +22,14 @@ module.exports = {
 
       let sortField
       switch(type) {
-        case 'elo':
-          sortField = 'ELO'
+        case 'ranked':
+          sortField = 'Ranked'
           break
-        case 'kills':
-          sortField = 'Kills'
-          break
-        case 'deaths':
-          sortField = 'Deaths'
-          break
-        case 'mvp':
-          sortField = 'MVP'
+        case 'unranked':
+          sortField = 'Unranked'
           break
         default:
-          return interaction.reply('Invalid leaderboard type. Select either ELO, Kills, Deaths, or MVPs.')
+          return interaction.reply('Invalid leaderboard type. Select either Ranked or Unranked.')
       }
 
       const entries = await Model.find({})
